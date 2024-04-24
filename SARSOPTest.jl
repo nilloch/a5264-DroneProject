@@ -1,5 +1,4 @@
-# using DroneSurveillance
-include("src/DroneSurveillance.jl")
+using .DroneSurveillance
 using POMDPs
 
 # import a solver from POMDPs.jl e.g. SARSOP
@@ -9,7 +8,7 @@ using SARSOP
 using POMDPGifs
 import Cairo
 
-pomdp = DroneSurveillance.DroneSurveillancePOMDP() # initialize the problem 
+pomdp = DroneSurveillancePOMDP() # initialize the problem 
 
 solver = SARSOPSolver(precision=1e-3) # configure the solver
 

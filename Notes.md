@@ -10,6 +10,6 @@ Things we've tried
 Interesting Papers
 1. [Alternative formulations for discrete partially observable Markov decision processes (POMDPs)
 New techniques with potential military applications](https://cradpdf.drdc-rddc.gc.ca/PDFS/unc431/p816751_A1b.pdf)
- * Not all that interesting, just some insight into use of DroneSurveillance.jl
+  * Not all that interesting, just some insight into use of DroneSurveillance.jl
 2. 
 

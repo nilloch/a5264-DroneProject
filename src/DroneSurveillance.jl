@@ -21,7 +21,9 @@ const DSPos = SVector{2, Int64}
 
 struct DSState
     quad::DSPos
+    photo::Bool 
 end
+
 
 """
     QuadCam
@@ -57,11 +59,11 @@ struct PerfectCam end
 @with_kw mutable struct DroneSurveillancePOMDP{M} <: POMDP{DSState, Int64, Int64}
     n = 5
     size::Tuple{Int64, Int64} = (n,n)
-    region_A::DSPos = [1, 1]
+    region_A::DSPos = DSPos([1, 1])
     fov::Tuple{Int64, Int64} = (3, 3)
     agent_policy::Symbol = :restricted
     camera::M = QuadCam() # PerfectCam
-    terminal_state::DSState = DSState([-1, -1])
+    terminal_state::DSState = DSState(DSPos([-1, -1]), false)
     discount_factor::Float64 = 0.95
 
     #our stuff
@@ -77,7 +79,7 @@ function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64)
     if s.quad == pomdp.detector
         return -1.0
     end
-    if s.quad == pomdp.target
+    if s.photo && isterminal(pomdp)
         return 1.0
     end
     return 0.0

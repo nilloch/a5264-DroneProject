@@ -53,7 +53,7 @@ policy = solve(solver, pomdp) # solve the problem
 @show "herh"
 # makegif(pomdp, policy, filename="out.gif")
 
-rs = RolloutSimulator()
+rs = RolloutSimulator(max_steps=10000)
 # mdp = GridWorld()
 # policy = RandomPolicy(mdp)
 

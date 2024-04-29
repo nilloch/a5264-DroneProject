@@ -6,12 +6,13 @@ function POMDPs.stateindex(pomdp::DroneSurveillancePOMDP, s::DSState)
     LinearIndices((nx, ny))[s.quad[1], s.quad[2]]
 end
 
+#TODO How to modify this for bool in state?
 function state_from_index(pomdp::DroneSurveillancePOMDP, si::Int64)
     if si == length(pomdp)
         return pomdp.terminal_state
     end
     nx, ny = pomdp.size 
-    s = CartesianIndices((nx, ny, nx, ny))[si]
+    s = CartesianIndices((2,nx, ny))[si] # 2 for photo being true/false
     return DSState([s[1], s[2]])
 end
 
@@ -63,7 +64,7 @@ function POMDPs.initialstate(pomdp::DroneSurveillancePOMDP)
 
     # probs = ones{Float64, pomdp.size[1]*pomdp.size[1]}()
 
-    return Deterministic(DSState([1,1]))
+    return Deterministic(DSState([1,1], false))
 
     # probs = normalize!(ones(length(states)), 1)
     # return SparseCat(states, probs)

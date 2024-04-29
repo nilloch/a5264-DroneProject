@@ -6,7 +6,7 @@ using POMDPGifs # Not included in extras
 
 pomdp = DroneSurveillancePOMDP()
 
-s = DSState(DSPos(2,2), DSPos(4,3))
+s = DSState(DSPos(2,2), false)
 
 c = render(pomdp, Dict(:s => s))
 

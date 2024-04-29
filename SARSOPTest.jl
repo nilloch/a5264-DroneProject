@@ -1,3 +1,4 @@
+include("src/DroneSurveillance.jl")
 using .DroneSurveillance
 using POMDPs
 

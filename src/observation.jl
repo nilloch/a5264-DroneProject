@@ -31,7 +31,7 @@ POMDPs.obsindex(pomdp::DroneSurveillancePOMDP, o::Int64) = o
 function POMDPs.observation(pomdp::DroneSurveillancePOMDP{QuadCam}, a::Int64, s::DSState)
     obs = SVector{N_OBS_QUAD}(1:N_OBS_QUAD)
     probs = zeros(MVector{N_OBS_QUAD})
-    obs_dir = s.agent - s.quad 
+    obs_dir = pomdp.target - s.quad 
     obs_ind = findfirst(isequal(obs_dir), OBS_DIRS)
     if obs_ind == nothing 
         probs[6] = 1.0
@@ -65,7 +65,7 @@ end
 function POMDPs.observation(pomdp::DroneSurveillancePOMDP{PerfectCam}, a::Int64, s::DSState)
     obs = SVector{N_OBS_PERFECT}(1:N_OBS_PERFECT)
     probs = zeros(MVector{N_OBS_PERFECT})
-    obs_dir = s.agent - s.quad 
+    obs_dir = pomdp.target-s.quad 
     obs_ind = findfirst(isequal(obs_dir), OBS_DIRS)
     if obs_ind == nothing 
         probs[10] = 1.0

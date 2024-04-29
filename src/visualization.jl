@@ -10,9 +10,18 @@ function POMDPTools.render(pomdp::DroneSurveillancePOMDP, step;
                 clr = ARGB(0.0, 0., 1.0, 0.9)
             end
         end
-        if DSPos(x, y) == pomdp.region_A || DSPos(x, y) == pomdp.region_B
+        if DSPos(x, y) == pomdp.region_A 
+            clr = "black"
+        end
+
+        if DSPos(x, y) == pomdp.target
             clr = "green"
         end
+
+        # if DSPos(x, y) == pomdp.detector
+        #     clr = "red"
+        # end
+
         cell = compose(ctx, rectangle(), fill(clr))
         push!(cells, cell)
     end
@@ -22,8 +31,8 @@ function POMDPTools.render(pomdp::DroneSurveillancePOMDP, step;
     if get(step, :s, nothing) != nothing
         quad_ctx = cell_ctx(step[:s].quad, (nx,ny))
         quad = render_quad(quad_ctx)
-        agent_ctx = cell_ctx(step[:s].agent, (nx, ny))
-        agent = render_agent(agent_ctx)
+        # agent_ctx = cell_ctx(step[:s].agent, (nx, ny))
+        # agent = render_agent(agent_ctx)
     else
         quad = nothing
         agent = nothing
@@ -31,7 +40,7 @@ function POMDPTools.render(pomdp::DroneSurveillancePOMDP, step;
     end
 
     sz = min(w,h)
-    return compose(context((w-sz)/2, (h-sz)/2, sz, sz), quad, agent, grid, outline)
+    return compose(context((w-sz)/2, (h-sz)/2, sz, sz), quad, grid, outline)
 end
 
 

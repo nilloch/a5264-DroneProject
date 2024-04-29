@@ -65,7 +65,7 @@ A drone must survey two region (in green) while avoiding to fly over a ground ag
 - keyword arguments:
   - `size::Tuple{Int64, Int64} = (5,5)` size of the grid world
   - `region_A::DSPos = [1, 1]` first region to survey, initial state of the quad
-  - `region_B::DSPos = [size[1], size[2]]` second region to survey
+  - `target::DSPos = [size[1], size[2]]` second region to survey
   - `fov::Tuple{Int64, Int64} = (3, 3)` size of the field of view of the drone
   - `agent_policy::Symbol = :random` policy of the other agent, only random is implemented
   - `terminal_state::DSState = DSState([-1, -1], [-1, -1])` a sentinel state to encode terminal states

@@ -21,7 +21,6 @@ const DSPos = SVector{2, Int64}
 
 struct DSState
     quad::DSPos
-    agent::DSPos
 end
 
 """
@@ -48,7 +47,7 @@ struct PerfectCam end
 # Fields
 - `size::Tuple{Int64, Int64} = (5,5)` size of the grid world
 - `region_A::DSPos = [1, 1]` first region to survey, initial state of the quad
-- `region_B::DSPos = [size[1], size[2]]` second region to survey
+- `target::DSPos = [size[1], size[2]]` second region to survey
 - `fov::Tuple{Int64, Int64} = (3, 3)` size of the field of view of the drone
 - `agent_policy::Symbol = :restricted` policy of the other agent
 - `camera::M = QuadCam()` observation model, choose between perfect camera and quad camera
@@ -56,24 +55,29 @@ struct PerfectCam end
 - `discount_factor::Float64 = 0.95` the discount factor
 """
 @with_kw mutable struct DroneSurveillancePOMDP{M} <: POMDP{DSState, Int64, Int64}
-    size::Tuple{Int64, Int64} = (5,5)
+    n = 5
+    size::Tuple{Int64, Int64} = (n,n)
     region_A::DSPos = [1, 1]
-    region_B::DSPos = [size[1], size[2]]
     fov::Tuple{Int64, Int64} = (3, 3)
     agent_policy::Symbol = :restricted
     camera::M = QuadCam() # PerfectCam
-    terminal_state::DSState = DSState([-1, -1], [-1, -1])
+    terminal_state::DSState = DSState([-1, -1])
     discount_factor::Float64 = 0.95
+
+    #our stuff
+    target::DSPos = [rand(1:n),rand(1:n)]
+    benign::DSPos = [rand(1:n),rand(1:n)]
+    detector::DSPos = [rand(1:n),rand(1:n)]
 end
 
 POMDPs.isterminal(pomdp::DroneSurveillancePOMDP, s::DSState) = s == pomdp.terminal_state
 POMDPs.discount(pomdp::DroneSurveillancePOMDP) = pomdp.discount_factor
 
 function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64)
-    if s.quad == s.agent
+    if s.quad == pomdp.detector
         return -1.0
     end
-    if s.quad == pomdp.region_B
+    if s.quad == pomdp.target
         return 1.0
     end
     return 0.0

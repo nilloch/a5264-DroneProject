@@ -1,24 +1,11 @@
 function POMDPs.transition(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64)
     # move quad
-    new_quad = s.quad + ACTION_DIRS[a]
-    if !(0 < new_quad[1] <= pomdp.size[1]) || !(0 < new_quad[2] <= pomdp.size[2]) || isterminal(pomdp, s) || s.quad == s.agent
+    new_quad  = s.quad + ACTION_DIRS[a]
+    if !(0 < new_quad[1] <= pomdp.size[1]) || !(0 < new_quad[2] <= pomdp.size[2]) || isterminal(pomdp, s)
         return Deterministic(pomdp.terminal_state) # the function is not type stable, returns either Deterministic or SparseCat
+    else
+        return Deterministic(DSState(new_quad)) # the function is not type stable, returns either Deterministic or SparseCat
     end
-
-    # move agent 
-    new_states = MVector{N_ACTIONS, DSState}(undef)
-    probs = @MVector(zeros(N_ACTIONS))
-    for (i, act) in enumerate(ACTION_DIRS)
-        new_agent = s.agent + act
-        if agent_inbounds(pomdp, new_agent)
-            new_states[i] = DSState(new_quad, new_agent)
-            probs[i] += 1.0
-        else
-            new_states[i] = pomdp.terminal_state
-        end
-    end
-    normalize!(probs, 1)
-    return SparseCat(new_states, probs)
 end
 
 """
@@ -31,7 +18,7 @@ function agent_inbounds(pomdp::DroneSurveillancePOMDP, s::DSPos)
         return false
     end
     if pomdp.agent_policy == :restricted 
-        if s == pomdp.region_A || s == pomdp.region_B
+        if s == pomdp.region_A || s == pomdp.target
             return false 
         end
     end

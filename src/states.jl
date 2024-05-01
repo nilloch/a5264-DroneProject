@@ -1,7 +1,12 @@
 function POMDPs.stateindex(pomdp::DroneSurveillancePOMDP, s::DSState)
     if isterminal(pomdp, s) 
-        return length(pomdp) + (s.photo ? 0 : -1) # has photo is length(pomdp). No photo is at length(pomdp)-1
+        return length(pomdp)
     end
+
+    if s==pomdp.reward_state
+        return length(pomdp)-1
+    end
+
     nx, ny = pomdp.size 
 
 
@@ -11,9 +16,9 @@ end
 #TODO How to modify this for bool in state?
 function state_from_index(pomdp::DroneSurveillancePOMDP, si::Int64)
     if si == length(pomdp)
-        return pomdp.terminal_states[2]
+        return pomdp.terminal_state
     elseif si == length(pomdp)-1
-        return pomdp.terminal_states[1]
+        return pomdp.reward_state
     end
         
     nx, ny = pomdp.size 

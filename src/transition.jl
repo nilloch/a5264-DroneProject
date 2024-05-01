@@ -1,8 +1,16 @@
 function POMDPs.transition(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64)
     # move quad
     new_quad  = s.quad + ACTION_DIRS[a]
-    if !(0 < new_quad[1] <= pomdp.size[1]) || !(0 < new_quad[2] <= pomdp.size[2]) || isterminal(pomdp, s)
-        return Deterministic(DSState(pomdp.terminal_states[1].quad, s.photo)) # the function is not type stable, returns either Deterministic or SparseCat
+    if !(0 < new_quad[1] <= pomdp.size[1]) || !(0 < new_quad[2] <= pomdp.size[2]) 
+        # if isterminal(pomdp, s) || s==pomdp.reward_state
+        #     return Deterministic(pomdp.terminal_state) # the function is not type stable, returns either Deterministic or SparseCat
+        # end
+        if s.photo && !isterminal(pomdp, s) && s!=pomdp.reward_state
+            return Deterministic(pomdp.reward_state)
+        else 
+            return Deterministic(pomdp.terminal_state)
+        end
+
     elseif (s.quad==pomdp.target) #takes photo
         return Deterministic(DSState(new_quad,true)) # the function is not type stable, returns either Deterministic or SparseCat
     else

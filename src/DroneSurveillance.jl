@@ -63,8 +63,10 @@ struct PerfectCam end
     fov::Tuple{Int64, Int64} = (3, 3)
     agent_policy::Symbol = :restricted
     camera::M = QuadCam() # PerfectCam
-    terminal_states::Vector{DSState} = [DSState(DSPos([-1, -1]), false), DSState(DSPos([-1, -1]), true)]
-    discount_factor::Float64 = 0.95
+    reward_state = DSState(DSPos([-1, -1]), true)
+    terminal_state::DSState = DSState(DSPos([-1, -1]), false)
+    # discount_factor::Float64 = 0.95
+    discount_factor::Float64 = .9999999
 
     #our stuff
     target::DSPos = [rand(1:n),rand(1:n)]
@@ -72,18 +74,16 @@ struct PerfectCam end
     detector::DSPos = [rand(1:n),rand(1:n)]
 end
 
-POMDPs.isterminal(pomdp::DroneSurveillancePOMDP, s::DSState) = (s in pomdp.terminal_states)
+POMDPs.isterminal(pomdp::DroneSurveillancePOMDP, s::DSState) = s == pomdp.terminal_state
 POMDPs.discount(pomdp::DroneSurveillancePOMDP) = pomdp.discount_factor
 
 function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64)
     if s.quad == pomdp.detector
         return -1.0
     end
-    if s.photo && isterminal(pomdp,s)
+
+    if s == pomdp.reward_state
         return 1.0
-    end
-    if !s.photo && isterminal(pomdp,s)
-        return -10.0
     end
 
     return 0.0

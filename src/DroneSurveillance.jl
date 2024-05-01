@@ -69,9 +69,10 @@ struct PerfectCam end
 
     #our stuff
     target::DSPos = [rand(1:n),rand(1:n)]
-    # target::DSPos = [1,1]
     benign::DSPos = [rand(1:n),rand(1:n)]
     detector::DSPos = [rand(1:n),rand(1:n)]
+
+    measurements = []
 end
 
 POMDPs.isterminal(pomdp::DroneSurveillancePOMDP, s::DSState) = s == pomdp.terminal_state

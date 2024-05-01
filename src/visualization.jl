@@ -18,6 +18,14 @@ function POMDPTools.render(pomdp::DroneSurveillancePOMDP, step;
             clr = "green"
         end
 
+        if DSPos(x, y) == pomdp.benign
+            clr = "yellow"
+        end
+
+        if DSPos(x, y) == pomdp.detector
+            clr = "red"
+        end
+
         # if DSPos(x, y) == pomdp.detector
         #     clr = "red"
         # end

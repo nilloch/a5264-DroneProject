@@ -11,7 +11,7 @@ function POMDPs.transition(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64)
             return Deterministic(pomdp.terminal_state)
         end
 
-    elseif (s.quad==pomdp.target) #takes photo
+    elseif (new_quad==pomdp.target) #takes photo
         return Deterministic(DSState(new_quad,true)) # the function is not type stable, returns either Deterministic or SparseCat
     else
         return Deterministic(DSState(new_quad,false))

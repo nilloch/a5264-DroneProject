@@ -80,7 +80,7 @@ function POMDPs.initialstate(pomdp::DroneSurveillancePOMDP)
 
     # probs = ones{Float64, pomdp.size[1]*pomdp.size[1]}()
 
-    return Deterministic(DSState([1,1], false))
+    return Deterministic(DSState(quad, false))
 
     # probs = normalize!(ones(length(states)), 1)
     # return SparseCat(states, probs)

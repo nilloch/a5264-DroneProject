@@ -59,17 +59,17 @@ struct PerfectCam end
 @with_kw mutable struct DroneSurveillancePOMDP{M} <: POMDP{DSState, Int64, Int64}
     n = 5
     size::Tuple{Int64, Int64} = (n,n)
-    region_A::DSPos = DSPos([1, 1])
+    region_A::DSPos = DSPos([3, 3])
     fov::Tuple{Int64, Int64} = (3, 3)
     agent_policy::Symbol = :restricted
     camera::M = QuadCam() # PerfectCam
     reward_state = DSState(DSPos([-1, -1]), true)
     terminal_state::DSState = DSState(DSPos([-1, -1]), false)
-    # discount_factor::Float64 = 0.95
-    discount_factor::Float64 = .9999999
+    discount_factor::Float64 = 0.95
 
     #our stuff
     target::DSPos = [rand(1:n),rand(1:n)]
+    # target::DSPos = [1,1]
     benign::DSPos = [rand(1:n),rand(1:n)]
     detector::DSPos = [rand(1:n),rand(1:n)]
 end

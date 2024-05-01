@@ -59,7 +59,7 @@ solver = SARSOPSolver(precision=1e-1) # configure the solver
 
 policy = solve(solver, pomdp) # solve the problem
 @show "herh"
-# makegif(pomdp, policy, filename="out.gif")
+makegif(pomdp, policy, filename="out.gif")
 
 rs = RolloutSimulator(max_steps=10000)
 # mdp = GridWorld()

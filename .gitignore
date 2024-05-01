@@ -1,2 +1,5 @@
 Manifest.toml
 .vscode
+
+policy.out
+model.pomdpx

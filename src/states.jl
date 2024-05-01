@@ -1,6 +1,6 @@
 function POMDPs.stateindex(pomdp::DroneSurveillancePOMDP, s::DSState)
-    if isterminal(pomdp, s)
-        return length(pomdp)
+    if isterminal(pomdp, s) 
+        return length(pomdp) + (s.photo ? 0 : -1) # has photo is length(pomdp). No photo is at length(pomdp)-1
     end
     nx, ny = pomdp.size 
 
@@ -11,9 +11,11 @@ end
 #TODO How to modify this for bool in state?
 function state_from_index(pomdp::DroneSurveillancePOMDP, si::Int64)
     if si == length(pomdp)
-        return pomdp.terminal_state
+        return pomdp.terminal_states[2]
+    elseif si == length(pomdp)-1
+        return pomdp.terminal_states[1]
     end
-
+        
     nx, ny = pomdp.size 
     s = CartesianIndices((nx, ny, 2))[si] # 2 for photo being true/false
     if s[3] == 2
@@ -29,7 +31,7 @@ end
 # we define an iterator over it
 
 POMDPs.states(pomdp::DroneSurveillancePOMDP) = pomdp
-Base.length(pomdp::DroneSurveillancePOMDP) = (pomdp.size[1] * pomdp.size[2] * 2) + 1
+Base.length(pomdp::DroneSurveillancePOMDP) = (pomdp.size[1] * pomdp.size[2] * 2) + 2 #2 is for two terminal states 
 
 function Base.iterate(pomdp::DroneSurveillancePOMDP, i::Int64 = 1)
     if i > length(pomdp)

@@ -20,6 +20,11 @@ using POMDPGifs
 import Cairo
 
 pomdp = DroneSurveillance.DroneSurveillancePOMDP() # initialize the problem 
+@show s = DroneSurveillance.DSState((1,1),false)
+@show s_idx = DroneSurveillance.stateindex(pomdp, s)
+@show DroneSurveillance.state_from_index(pomdp,s_idx)
+
+@show pomdp.size
 
 using SARSOP
 solver = SARSOPSolver(precision=1e-1) # configure the solver

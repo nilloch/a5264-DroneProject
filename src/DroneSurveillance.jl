@@ -79,7 +79,7 @@ function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64)
     if s.quad == pomdp.detector
         return -1.0
     end
-    if s.photo && isterminal(pomdp)
+    if s.photo && isterminal(pomdp,s)
         return 1.0
     end
     return 0.0

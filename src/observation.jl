@@ -33,45 +33,50 @@ function POMDPs.observation(pomdp::DroneSurveillancePOMDP{QuadCam}, a::Int64, s:
     probs = zeros(MVector{N_OBS_QUAD})
     obs_dir = pomdp.target - s.quad 
     obs_ind = findfirst(isequal(obs_dir), OBS_DIRS)
-    if obs_ind == nothing 
-        probs[6] = 1.0
-        return SparseCat(obs, probs)
-    elseif OBS_DICT[obs_ind] == :DET
-        probs[5] = 1.0
-        return SparseCat(obs, probs)
-    elseif OBS_DICT[obs_ind] in [:SW, :NW, :NE, :SE]
-        quad_ind = findfirst(isequal(OBS_DICT[obs_ind]), OBS_QUAD)
-        probs[quad_ind] = 1.0
-        return SparseCat(obs, probs)
-    elseif OBS_DICT[obs_ind] == :W
-        probs[1] = 0.5
-        probs[2] = 0.5
-        return SparseCat(obs, probs)
-    elseif OBS_DICT[obs_ind] == :N
-        probs[2] = 0.5
-        probs[3] = 0.5
-        return SparseCat(obs, probs)
-    elseif OBS_DICT[obs_ind] == :E
-        probs[3] = 0.5
-        probs[4] = 0.5
-        return SparseCat(obs, probs)
-    else # OBS_DICT[obs_ind] == :S south
-        probs[4] = 0.5
-        probs[1] = 0.5
-        return SparseCat(obs, probs)
-    end
+
+    probs[1] = 1.0
+    # @show obs
+    return SparseCat(obs, probs)
+
+    # if obs_ind == nothing 
+    #     probs[6] = 1.0
+    #     return SparseCat(obs, probs)
+    # elseif OBS_DICT[obs_ind] == :DET
+    #     probs[5] = 1.0
+    #     return SparseCat(obs, probs)
+    # elseif OBS_DICT[obs_ind] in [:SW, :NW, :NE, :SE]
+    #     quad_ind = findfirst(isequal(OBS_DICT[obs_ind]), OBS_QUAD)
+    #     probs[quad_ind] = 1.0
+    #     return SparseCat(obs, probs)
+    # elseif OBS_DICT[obs_ind] == :W
+    #     probs[1] = 0.5
+    #     probs[2] = 0.5
+    #     return SparseCat(obs, probs)
+    # elseif OBS_DICT[obs_ind] == :N
+    #     probs[2] = 0.5
+    #     probs[3] = 0.5
+    #     return SparseCat(obs, probs)
+    # elseif OBS_DICT[obs_ind] == :E
+    #     probs[3] = 0.5
+    #     probs[4] = 0.5
+    #     return SparseCat(obs, probs)
+    # else # OBS_DICT[obs_ind] == :S south
+    #     probs[4] = 0.5
+    #     probs[1] = 0.5
+    #     return SparseCat(obs, probs)
+    # end
 end
 
-function POMDPs.observation(pomdp::DroneSurveillancePOMDP{PerfectCam}, a::Int64, s::DSState)
-    obs = SVector{N_OBS_PERFECT}(1:N_OBS_PERFECT)
-    probs = zeros(MVector{N_OBS_PERFECT})
-    obs_dir = pomdp.target-s.quad 
-    obs_ind = findfirst(isequal(obs_dir), OBS_DIRS)
-    if obs_ind == nothing 
-        probs[10] = 1.0
-        return SparseCat(obs, probs)
-    else
-        probs[obs_ind] = 1.0
-        return SparseCat(obs, probs)
-    end
-end
+# function POMDPs.observation(pomdp::DroneSurveillancePOMDP{PerfectCam}, a::Int64, s::DSState)
+#     obs = SVector{N_OBS_PERFECT}(1:N_OBS_PERFECT)
+#     probs = zeros(MVector{N_OBS_PERFECT})
+#     obs_dir = pomdp.target-s.quad 
+#     obs_ind = findfirst(isequal(obs_dir), OBS_DIRS)
+#     if obs_ind == nothing 
+#         probs[10] = 1.0
+#         return SparseCat(obs, probs)
+#     else
+#         probs[obs_ind] = 1.0
+#         return SparseCat(obs, probs)
+#     end
+# end

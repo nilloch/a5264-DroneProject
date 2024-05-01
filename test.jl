@@ -26,6 +26,9 @@ pomdp = DroneSurveillance.DroneSurveillancePOMDP() # initialize the problem
 
 @show pomdp.size
 
+# POMDPs.observation(pomdp::DroneSurveillancePOMDP{QuadCam}, a::Int64, s::DSState)
+@show POMDPs.observation(pomdp,1,s)
+
 using SARSOP
 solver = SARSOPSolver(precision=1e-1) # configure the solver
 

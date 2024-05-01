@@ -10,7 +10,7 @@ function POMDPs.stateindex(pomdp::DroneSurveillancePOMDP, s::DSState)
     nx, ny = pomdp.size 
 
 
-    LinearIndices((nx, ny, 2))[s.quad[1], s.quad[2], (s.photo ? 2 : 1)]
+    LinearIndices((nx, ny, nx, ny, nx, ny, nx, ny, 2))[s.quad[1], s.quad[2], s.target[1], s.target[2], s.benign[1], s.benign[2], s.detector[1], s.detector[2], (s.photo ? 2 : 1)]
 end
 
 #TODO How to modify this for bool in state?
@@ -22,21 +22,21 @@ function state_from_index(pomdp::DroneSurveillancePOMDP, si::Int64)
     end
         
     nx, ny = pomdp.size 
-    s = CartesianIndices((nx, ny, 2))[si] # 2 for photo being true/false
+    s = CartesianIndices((nx, ny, nx, ny, nx, ny, nx, ny, 2))[si] # 2 for photo being true/false
     if s[3] == 2
-        photo=true
+        photo = true
     else # == 1
-        photo=false
+        photo = false
     end
 
-    return DSState([s[1], s[2]], photo)
+    return DSState([s[1], s[2]],[s[3], s[4]],[s[5], s[6]],[s[7], s[8]], photo)
 end
 
 # the state space is the POMDP itself
 # we define an iterator over it
 
 POMDPs.states(pomdp::DroneSurveillancePOMDP) = pomdp
-Base.length(pomdp::DroneSurveillancePOMDP) = (pomdp.size[1] * pomdp.size[2] * 2) + 2 #2 is for two terminal states 
+Base.length(pomdp::DroneSurveillancePOMDP) = ((pomdp.size[1] * pomdp.size[2])^4 * 2) + 2 #2 is for two terminal states 
 
 function Base.iterate(pomdp::DroneSurveillancePOMDP, i::Int64 = 1)
     if i > length(pomdp)
@@ -50,38 +50,12 @@ function POMDPs.initialstate(pomdp::DroneSurveillancePOMDP)
     quad = pomdp.region_A
     nx, ny = pomdp.size
     fov_x, fov_y = pomdp.fov
-    states = DSState[]
-    # if pomdp.agent_policy == :restricted 
-    #     xspace = fov_x:nx
-    #     yspace = fov_y:ny
-    #     for x in fov_x:nx
-    #         for y in 1:ny
-    #             agent = DSPos(x, y)
-    #             push!(states, DSState(quad))
-    #         end
-    #     end
-    #     for y in fov_y:ny
-    #         for x in 1:fov_x-1
-    #             agent = DSPos(x, y)
-    #             push!(states, DSState(quad))
-    #         end
-    #     end
+    # states = DSState[]
+    n = pomdp.n
+    target::DSPos = [rand(1:n),rand(1:n)]
+    benign::DSPos = [rand(1:n),rand(1:n)]
+    detector::DSPos = [rand(1:n),rand(1:n)]
 
-    # else 
-    #     for x in 1:nx 
-    #         for y in 1:ny
-    #             if (x,y) != (1,1)
-    #                 agent = DSPos(x, y)
-    #                 push!(states, DSState(quad))
-    #             end
-    #         end
-    #     end
-    # end
+    return Deterministic(DSState(quad, target, benign, detector, false))
 
-    # probs = ones{Float64, pomdp.size[1]*pomdp.size[1]}()
-
-    return Deterministic(DSState(quad, false))
-
-    # probs = normalize!(ones(length(states)), 1)
-    # return SparseCat(states, probs)
 end

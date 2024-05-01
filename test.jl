@@ -20,36 +20,24 @@ using POMDPGifs
 import Cairo
 
 pomdp = DroneSurveillance.DroneSurveillancePOMDP() # initialize the problem 
-@show s = DroneSurveillance.DSState((1,1),false)
-@show s_idx = DroneSurveillance.stateindex(pomdp, s)
-@show DroneSurveillance.state_from_index(pomdp,s_idx)
+# @show s = DroneSurveillance.DSState((1,1),false)
+# @show s_idx = DroneSurveillance.stateindex(pomdp, s)
+# @show DroneSurveillance.state_from_index(pomdp,s_idx)
 
 @show pomdp.size
 
 # POMDPs.observation(pomdp::DroneSurveillancePOMDP{QuadCam}, a::Int64, s::DSState)
-@show POMDPs.observation(pomdp,1,s)
+# @show POMDPs.observation(pomdp,1,s)
 
 using SARSOP
-solver = SARSOPSolver(precision=1e-1) # configure the solver
+# solver = SARSOPSolver(precision=1e-1) # configure the solver
 
-# function BasicPOMCP.updater(p::POMCPPlanner)
-#     P = typeof(p.problem)
-#     S = statetype(P)
-#     A = actiontype(P)
-#     O = obstype(P)
-#     return BootstrapFilter(p.problem, p.solver.tree_queries, rng=p.rng)
-#     # XXX It would be better to automatically use an SIRParticleFilter if possible
-#     # if !@implemented ParticleFilters.obs_weight(::P, ::S, ::A, ::S, ::O)
-#     #     return UnweightedParticleFilter(p.problem, p.solver.tree_queries, rng=p.rng)
-#     # end
-#     # return SIRParticleFilter(p.problem, p.solver.tree_queries, rng=p.rng)
-# end
 
-# solver = POMCPSolver(tree_queries=200,
-#     c=1,
-#     default_action=ordered_actions(pomdp)[1],
-#     #  estimate_value=FORollout(ValueIterationSolver))
-#     estimate_value=FORollout(ValueIterationSolver()))
+solver = POMCPSolver(tree_queries=200,
+    c=1,
+    default_action=ordered_actions(pomdp)[1],
+    #  estimate_value=FORollout(ValueIterationSolver))
+    estimate_value=FORollout(ValueIterationSolver()))
 
 # # struct HW6Updater{M<:BasicPOMCP} <: Updater
 # #     m::M
@@ -59,10 +47,10 @@ solver = SARSOPSolver(precision=1e-1) # configure the solver
 
 policy = solve(solver, pomdp) # solve the problem
 @show "herh"
-makegif(pomdp, policy, filename="out.gif")
+makegif(pomdp, policy, filename="out.gif", max_steps=1000)
 
-rs = RolloutSimulator(max_steps=10000)
+# rs = RolloutSimulator(max_steps=10000)
 # mdp = GridWorld()
 # policy = RandomPolicy(mdp)
 
-@show r = simulate(rs, pomdp, policy)
+# @show r = simulate(rs, pomdp, policy)

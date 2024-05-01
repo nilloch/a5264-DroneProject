@@ -11,10 +11,10 @@ function POMDPs.transition(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64)
             return Deterministic(pomdp.terminal_state)
         end
 
-    elseif (new_quad==pomdp.target) #takes photo
-        return Deterministic(DSState(new_quad,true)) # the function is not type stable, returns either Deterministic or SparseCat
+    elseif (new_quad==s.target) #takes photo
+        return Deterministic(DSState(new_quad, s.target, s.benign, s.detector, true)) # the function is not type stable, returns either Deterministic or SparseCat
     else
-        return Deterministic(DSState(new_quad,false))
+        return Deterministic(DSState(new_quad, s.target, s.benign, s.detector, false))
     end
 end
 
@@ -28,7 +28,7 @@ function agent_inbounds(pomdp::DroneSurveillancePOMDP, s::DSPos)
         return false
     end
     if pomdp.agent_policy == :restricted 
-        if s == pomdp.region_A || s == pomdp.target
+        if s == pomdp.region_A || s == s.target
             return false 
         end
     end

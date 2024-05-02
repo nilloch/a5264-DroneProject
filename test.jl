@@ -19,9 +19,9 @@ using ParticleFilters
 using POMDPGifs
 import Cairo
 pomdp = DroneSurveillance.DroneSurveillancePOMDP() # initialize the problem 
-@show POMDPs.initialstate(pomdp)
-@show POMDPs.initialstate(pomdp)
-@show POMDPs.initialstate(pomdp)
+# @show POMDPs.initialstate(pomdp)
+# @show POMDPs.initialstate(pomdp)
+# @show POMDPs.initialstate(pomdp)
 # @show s = DroneSurveillance.DSState((1,1),false)
 # @show s_idx = DroneSurveillance.stateindex(pomdp, s)
 # @show DroneSurveillance.state_from_index(pomdp,s_idx)
@@ -31,8 +31,8 @@ pomdp = DroneSurveillance.DroneSurveillancePOMDP() # initialize the problem
 # # POMDPs.observation(pomdp::DroneSurveillancePOMDP{QuadCam}, a::Int64, s::DSState)
 # @show POMDPs.observation(pomdp,1,s)
 
-# using SARSOP
-# # solver = SARSOPSolver(precision=1e-3) # configure the solver
+using SARSOP
+solver = SARSOPSolver(precision=1e-3) # configure the solver
 
 # function BasicPOMCP.updater(p::POMCPPlanner)
 #     P = typeof(p.problem)
@@ -59,9 +59,9 @@ pomdp = DroneSurveillance.DroneSurveillancePOMDP() # initialize the problem
     
 # # BasicPOMCP.updater = my_updater
 
-# policy = solve(solver, pomdp) # solve the problem
-# @show "herh"
-# makegif(pomdp, policy, filename="out.gif")
+policy = solve(solver, pomdp) # solve the problem
+@show "herh"
+makegif(pomdp, policy, filename="out.gif")
 
 # rs = RolloutSimulator(max_steps=10000)
 # # mdp = GridWorld()

@@ -1,3 +1,5 @@
+# using Combinatorics
+
 function POMDPs.stateindex(pomdp::DroneSurveillancePOMDP, s::DSState)
     if isterminal(pomdp, s) 
         return length(pomdp)
@@ -22,14 +24,14 @@ function state_from_index(pomdp::DroneSurveillancePOMDP, si::Int64)
     end
         
     nx, ny = pomdp.size 
-    s = CartesianIndices((nx, ny, 2))[si] # 2 for photo being true/false
-    if s[3] == 2
+    s = CartesianIndices((nx, ny, 6, 2))[si] # 2 for photo being true/false
+    if s[4] == 2
         photo=true
     else # == 1
         photo=false
     end
     getkey
-    return DSState([s[1], s[2]], pomdp.entities, (k for (k,v) in pomdp.idPerms if v == si)[1], photo)
+    return DSState([s[1], s[2]], pomdp.entities, [k for (k,v) in pomdp.idPerms if v == s[3]][1], photo)
 end
 
 # the state space is the POMDP itself
@@ -52,7 +54,10 @@ function POMDPs.initialstate(pomdp::DroneSurveillancePOMDP)
     # fov_x, fov_y = pomdp.fov
     # states = DSState[]
     pomdp.entities = [DSPos([rand(1:nx),rand(1:ny)]),DSPos([rand(1:nx),rand(1:ny)]),DSPos([rand(1:nx),rand(1:ny)])]
-    return Deterministic(DSState(quad, pomdp.entities ,rand([p for p in multiset_permutations(pomdp.ids,3)]), false))
+    @show pomdp.entities
+    @show initS = Deterministic(DSState(quad, pomdp.entities ,rand([p for p in multiset_permutations(pomdp.ids,3)]), false))
+    @show POMDPs.stateindex(pomdp,initS)
+    return initS
 
     # probs = normalize!(ones(length(states)), 1)
     # return SparseCat(states, probs)

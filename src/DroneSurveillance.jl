@@ -71,23 +71,23 @@ struct PerfectCam end
     discount_factor::Float64 = 0.95
     #our stuff
     ids = [:T,:B,:D]
-    idPerms = Dict(p => i for (i,p) in enumerate(multiset_permutations(ids)))
+    idPerms = Dict(p => i for (i,p) in enumerate(multiset_permutations(ids,3)))
     entities = []
-    measurements = []
+    # measurements = []
 end
 
 POMDPs.isterminal(pomdp::DroneSurveillancePOMDP, s::DSState) = s == pomdp.terminal_state
 POMDPs.discount(pomdp::DroneSurveillancePOMDP) = pomdp.discount_factor
 
 function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64)
-    if s.quad == s.entities[findfirst(:D.==s.identities)]
-        return -1.0
-    end
-
     if s == pomdp.reward_state
         return 1.0
     end
-
+    
+    if s.quad == s.entities[findfirst(:D .== s.identities)]
+        return -1.0
+    end
+    
     return 0.0
 end
 

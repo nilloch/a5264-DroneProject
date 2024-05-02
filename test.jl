@@ -1,5 +1,3 @@
-# include("C:\\Users\\luker\\Documents\\repos\\asen5264\\hw6\\q1.jl")
-
 include("src/DroneSurveillance.jl")
 
 using .DroneSurveillance
@@ -33,7 +31,6 @@ pomdp = DroneSurveillance.DroneSurveillancePOMDP() # initialize the problem
 
 using SARSOP
 solver = SARSOPSolver(precision=1e-3) # configure the solver
-
 # function BasicPOMCP.updater(p::POMCPPlanner)
 #     P = typeof(p.problem)
 #     S = statetype(P)

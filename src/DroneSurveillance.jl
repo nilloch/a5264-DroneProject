@@ -72,7 +72,7 @@ struct PerfectCam end
     #our stuff
     ids = [:T,:B,:D]
     idPerms = Dict(p => i for (i,p) in enumerate(multiset_permutations(ids,3)))
-    entities = []
+    entities = [DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])])]
     # measurements = []
 end
 

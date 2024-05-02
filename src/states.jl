@@ -50,15 +50,12 @@ end
 
 function POMDPs.initialstate(pomdp::DroneSurveillancePOMDP)
     quad = pomdp.region_A
-    nx, ny = pomdp.size
-    # fov_x, fov_y = pomdp.fov
-    # states = DSState[]
-    pomdp.entities = [DSPos([rand(1:nx),rand(1:ny)]),DSPos([rand(1:nx),rand(1:ny)]),DSPos([rand(1:nx),rand(1:ny)])]
-    @show pomdp.entities
-    @show initS = Deterministic(DSState(quad, pomdp.entities ,rand([p for p in multiset_permutations(pomdp.ids,3)]), false))
-    @show POMDPs.stateindex(pomdp,initS)
-    return initS
+    states = DSState[]
 
-    # probs = normalize!(ones(length(states)), 1)
-    # return SparseCat(states, probs)
+    for key in keys(pomdp.idPerms)
+        push!(states, DSState(quad, pomdp.entities, key, false))
+        push!(states, DSState(quad, pomdp.entities, key, true))
+    end
+    
+    return Uniform(states)
 end

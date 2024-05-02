@@ -30,23 +30,23 @@ pomdp = DroneSurveillance.DroneSurveillancePOMDP() # initialize the problem
 @show POMDPs.observation(pomdp,1,s)
 
 using SARSOP
-solver = SARSOPSolver(precision=1e-1) # configure the solver
+# solver = SARSOPSolver(precision=1e-3) # configure the solver
 
-# function BasicPOMCP.updater(p::POMCPPlanner)
-#     P = typeof(p.problem)
-#     S = statetype(P)
-#     A = actiontype(P)
-#     O = obstype(P)
-#     return BootstrapFilter(p.problem, p.solver.tree_queries, rng=p.rng)
-#     # XXX It would be better to automatically use an SIRParticleFilter if possible
-#     # if !@implemented ParticleFilters.obs_weight(::P, ::S, ::A, ::S, ::O)
-#     #     return UnweightedParticleFilter(p.problem, p.solver.tree_queries, rng=p.rng)
-#     # end
-#     # return SIRParticleFilter(p.problem, p.solver.tree_queries, rng=p.rng)
-# end
+function BasicPOMCP.updater(p::POMCPPlanner)
+    P = typeof(p.problem)
+    S = statetype(P)
+    A = actiontype(P)
+    O = obstype(P)
+    return BootstrapFilter(p.problem, p.solver.tree_queries, rng=p.rng)
+    # XXX It would be better to automatically use an SIRParticleFilter if possible
+    # if !@implemented ParticleFilters.obs_weight(::P, ::S, ::A, ::S, ::O)
+    #     return UnweightedParticleFilter(p.problem, p.solver.tree_queries, rng=p.rng)
+    # end
+    # return SIRParticleFilter(p.problem, p.solver.tree_queries, rng=p.rng)
+end
 
 # solver = POMCPSolver(tree_queries=200,
-#     c=1,
+#     c=10,
 #     default_action=ordered_actions(pomdp)[1],
 #     #  estimate_value=FORollout(ValueIterationSolver))
 #     estimate_value=FORollout(ValueIterationSolver()))

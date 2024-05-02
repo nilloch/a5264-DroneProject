@@ -20,20 +20,10 @@ export
 
 const DSPos = SVector{2, Int64}
 
-num = 5
-
-ids = [:T,:B,:D]
-
-target::DSPos = [rand(1:n),rand(1:n)]
-# benign::DSPos = [rand(1:n),rand(1:n)]
-benign::DSPos = [4,2]
-# detector::DSPos = [rand(1:n),rand(1:n)]
-detector::DSPos = [3,4]
-
 struct DSState
     quad::DSPos
-    entities::Vector{DSPos} = [DSPos([rand(1:n),rand(1:n)]),DSPos([rand(1:n),rand(1:n)]),DSPos([rand(1:n),rand(1:n)])]
-    identities::Vector{typeof(:thing)} = rand([p for p in multiset_permutations(ids,3)])
+    entities::Vector{DSPos}
+    identities::Vector{typeof(:thing)}
     photo::Bool 
 end
 
@@ -70,7 +60,7 @@ struct PerfectCam end
 - `discount_factor::Float64 = 0.95` the discount factor
 """
 @with_kw mutable struct DroneSurveillancePOMDP{M} <: POMDP{DSState, Int64, Int64}
-    n = num
+    n = 5
     size::Tuple{Int64, Int64} = (n,n)
     region_A::DSPos = DSPos([3, 3])
     fov::Tuple{Int64, Int64} = (3, 3)
@@ -79,10 +69,10 @@ struct PerfectCam end
     reward_state = DSState(DSPos([-1, -1]),[DSPos([-1, -1]),DSPos([-1, -1]),DSPos([-1, -1])], [:T,:T,:T], true)
     terminal_state::DSState = DSState(DSPos([-1, -1]),[DSPos([-1, -1]),DSPos([-1, -1]),DSPos([-1, -1])], [:T,:T,:T], false)
     discount_factor::Float64 = 0.95
-
     #our stuff
-
-
+    ids = [:T,:B,:D]
+    idPerms = Dict(p => i for (i,p) in enumerate(multiset_permutations(ids)))
+    entities = []
     measurements = []
 end
 

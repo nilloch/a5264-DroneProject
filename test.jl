@@ -30,7 +30,7 @@ pomdp = DroneSurveillance.DroneSurveillancePOMDP() # initialize the problem
 # @show POMDPs.observation(pomdp,1,s)
 
 using SARSOP
-solver = SARSOPSolver(precision=0.9e-1) # configure the solver
+solver = SARSOPSolver(precision=0.75e-1) # configure the solver
 # function BasicPOMCP.updater(p::POMCPPlanner)
 #     P = typeof(p.problem)
 #     S = statetype(P)
@@ -60,7 +60,7 @@ policy = solve(solver, pomdp) # solve the problem
 @show "herh"
 makegif(pomdp, policy, filename="out.gif")
 
-rs = RolloutSimulator(max_steps=10000)
+# rs = RolloutSimulator(max_steps=10000)
 # # mdp = GridWorld()
 # # policy = RandomPolicy(mdp)
 

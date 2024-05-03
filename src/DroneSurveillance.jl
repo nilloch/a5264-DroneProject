@@ -62,7 +62,7 @@ struct PerfectCam end
 @with_kw mutable struct DroneSurveillancePOMDP{M} <: POMDP{DSState, Int64, Int64}
     n = 5
     size::Tuple{Int64, Int64} = (n,n)
-    region_A::DSPos = DSPos([3, 1])
+    region_A::DSPos = DSPos([1, 1])
     fov::Tuple{Int64, Int64} = (3, 3)
     agent_policy::Symbol = :restricted
     camera::M = QuadCam() # PerfectCam
@@ -72,8 +72,8 @@ struct PerfectCam end
     #our stuff
     ids = [:T,:B,:D]
     idPerms = Dict(p => i for (i,p) in enumerate(multiset_permutations(ids,3)))
-    entities = [DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])])]
-    # entities = [DSPos([3,5]),DSPos([4,3]),DSPos([3,3])]
+    # entities = [DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])])]
+    entities = [DSPos([1,5]),DSPos([5,1]),DSPos([5,5])]
 end
 
 POMDPs.isterminal(pomdp::DroneSurveillancePOMDP, s::DSState) = s == pomdp.terminal_state

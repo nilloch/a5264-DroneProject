@@ -30,7 +30,7 @@ pomdp = DroneSurveillance.DroneSurveillancePOMDP() # initialize the problem
 # @show POMDPs.observation(pomdp,1,s)
 
 using SARSOP
-solver = SARSOPSolver(precision=1e-3) # configure the solver
+solver = SARSOPSolver(precision=0.9e-1) # configure the solver
 # function BasicPOMCP.updater(p::POMCPPlanner)
 #     P = typeof(p.problem)
 #     S = statetype(P)

@@ -62,17 +62,18 @@ struct PerfectCam end
 @with_kw mutable struct DroneSurveillancePOMDP{M} <: POMDP{DSState, Int64, Int64}
     n = 5
     size::Tuple{Int64, Int64} = (n,n)
-    region_A::DSPos = DSPos([3, 3])
+    region_A::DSPos = DSPos([3, 1])
     fov::Tuple{Int64, Int64} = (3, 3)
     agent_policy::Symbol = :restricted
     camera::M = QuadCam() # PerfectCam
-    reward_state = DSState(DSPos([-1, -1]),[DSPos([-1, -1]),DSPos([-1, -1]),DSPos([-1, -1])], [:T,:T,:T], true)
-    terminal_state::DSState = DSState(DSPos([-1, -1]),[DSPos([-1, -1]),DSPos([-1, -1]),DSPos([-1, -1])], [:T,:T,:T], false)
+    reward_state = DSState(DSPos([-1, -1]),[DSPos([-1, -1]),DSPos([-1, -1]),DSPos([-1, -1])], [:T,:B,:D], true)
+    terminal_state::DSState = DSState(DSPos([-1, -1]),[DSPos([-1, -1]),DSPos([-1, -1]),DSPos([-1, -1])], [:T,:B,:D], false)
     discount_factor::Float64 = 0.95
     #our stuff
     ids = [:T,:B,:D]
     idPerms = Dict(p => i for (i,p) in enumerate(multiset_permutations(ids,3)))
     entities = [DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])])]
+    # entities = [DSPos([3,5]),DSPos([4,3]),DSPos([3,3])]
     # measurements = []
 end
 

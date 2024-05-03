@@ -14,15 +14,15 @@ function POMDPTools.render(pomdp::DroneSurveillancePOMDP, step;
             clr = "black"
         end
 
-        if DSPos(x, y) == pomdp.target
+        if DSPos(x, y) == step[:s].entities[findfirst(:T .== step[:s].identities)]
             clr = "green"
         end
 
-        if DSPos(x, y) == pomdp.benign
+        if DSPos(x, y) == step[:s].entities[findfirst(:B .== step[:s].identities)]
             clr = "yellow"
         end
 
-        if DSPos(x, y) == pomdp.detector
+        if DSPos(x, y) == step[:s].entities[findfirst(:D .== step[:s].identities)]
             clr = "red"
         end
 

@@ -18,21 +18,19 @@ end
 # given the entity, what is the probability it is observed as any entity
 function Z(entity)
     if entity == :T 
-        return [0.5, 0.25, 0.25, 0.0]
-        # return [0.0, 0.0, 1.0, 0.0]
+        # return [0.5, 0.25, 0.25, 0.0]
+        return [1.0, 0.0, 0.0, 0.0]
     elseif entity == :B
-        return [0.25, 0.5, 0.25, 0.0]
-        # return [1.0, 0.0, 0.0, 0.0]
+        # return [0.25, 0.5, 0.25, 0.0]
+        return [0.0, 1.0, 0.0, 0.0]
     elseif entity == :D
-        return [0.25, 0.25, 0.5, 0.0]
-        # return [0.25, 0.25, 0.25, 0.25]
+        # return [0.25, 0.25, 0.5, 0.0]
+        return [0.0, 0.0, 1.0, 0.0]
     end
 end
-@show obs = perm(ind_obs,3)
+obs = perm(ind_obs,3)
 obs2idx_dict = Dict((obs[i]) => i for i in 1:length(obs))
 idx2obs_dict = Dict((i) => obs[i] for i in 1:length(obs))
-# @show probs = (Z(:T) * Z(:B)') .* reshape(Z(:D), 1, 1, :)
-# @show probs = vec(probs)
 
 const OBS_QUAD = [:SW, :NW, :NE, :SE, :DET, :OUT]
 const N_OBS_PERFECT = 10

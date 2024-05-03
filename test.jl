@@ -40,6 +40,14 @@ solver = POMCPSolver(tree_queries=200,
 
 # BasicPOMCP.updater = my_updater
 
+function BasicPOMCP.updater(p::POMCPPlanner)
+    P = typeof(p.problem)
+    S = statetype(P)
+    A = actiontype(P)
+    O = obstype(P)
+    return BootstrapFilter(p.problem, 10_000)
+end
+
 policy = solve(solver, pomdp) # solve the problem
 @show "herh"
 makegif(pomdp, policy, filename="gifs/out.gif")

@@ -45,7 +45,7 @@ POMDPs.obsindex(pomdp::DroneSurveillancePOMDP, o::Int64) = o
 function POMDPs.observation(pomdp::DroneSurveillancePOMDP{QuadCam}, a::Int64, s::DSState)
     probs = (Z(s.identities[1]) * Z(s.identities[2])') .* reshape(Z(s.identities[3]), 1, 1, :)
     probs = vec(probs)
-    return SparseCat(obs, probs)
+    return SparseCat(1:length(obs), probs)
 end
 
 # function POMDPs.observation(pomdp::DroneSurveillancePOMDP{PerfectCam}, a::Int64, s::DSState)

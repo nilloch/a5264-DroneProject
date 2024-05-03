@@ -55,6 +55,5 @@ function POMDPs.initialstate(pomdp::DroneSurveillancePOMDP)
     for key in keys(pomdp.idPerms)
         push!(states, DSState(quad, pomdp.entities, key, false))
     end
-    @show dist = Uniform(states)
-    return dist
+    return Uniform(states)
 end

@@ -2,6 +2,8 @@ function POMDPTools.render(pomdp::DroneSurveillancePOMDP, step;
                                 viz_rock_state=true)
     nx, ny = pomdp.size
     cells = []
+    @show step[:s]
+    @show step[:r]
     for x in 1:nx, y in 1:ny
         ctx = cell_ctx((x,y), (nx,ny))
         clr = "white"

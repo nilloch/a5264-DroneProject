@@ -74,7 +74,6 @@ struct PerfectCam end
     idPerms = Dict(p => i for (i,p) in enumerate(multiset_permutations(ids,3)))
     entities = [DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])])]
     # entities = [DSPos([3,5]),DSPos([4,3]),DSPos([3,3])]
-    # measurements = []
 end
 
 POMDPs.isterminal(pomdp::DroneSurveillancePOMDP, s::DSState) = s == pomdp.terminal_state
@@ -82,7 +81,7 @@ POMDPs.discount(pomdp::DroneSurveillancePOMDP) = pomdp.discount_factor
 
 function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64)
     if s == pomdp.reward_state
-        return 1.0
+        return 2.0
     end
     
     if s.quad == s.entities[findfirst(:D .== s.identities)]

@@ -60,8 +60,22 @@ policy = solve(solver, pomdp) # solve the problem
 @show "herh"
 makegif(pomdp, policy, filename="out.gif")
 
-# rs = RolloutSimulator(max_steps=10000)
+rs = RolloutSimulator(max_steps=10000)
 # # mdp = GridWorld()
 # # policy = RandomPolicy(mdp)
 
 # @show r = simulate(rs, pomdp, policy)
+# global r_sum = 0.0
+# global bruh = 0
+# for (b, s, a, o, r) in stepthrough(pomdp, policy, "b,s,a,o,r"; max_steps=10000)
+#     # bruh += 1
+#     # println("Step $step")
+#     @show s
+#     @show a
+#     @show o
+#     @show r
+#     # r_sum += r
+#     # @show r_sum
+#     println()
+# end
+

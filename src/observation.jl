@@ -1,22 +1,52 @@
-                           #TBD 
-# const OBS_DICT = Dict(1 => (:T,:T,:T), #<- measurement that all target
-#                       2 => :TTB, # 
-#                       3 => :TTD,
-#                       4 => :BTT,
-#                       5 => :BTB, # right under the quad
-#                       6 => :BTD,
-#                       7 => :DTT,
-#                       8 => :DTB,
-#                       9 => :DTD,
-#                       10 => :OUT) # out of the FOV
-ind_obs = [:T,:B,:D,:N]
+loc_obs = [:N,:NE,:E,:SE,:S,:SW,:W,:NW,:CEN,:OUT]
+const OBS_DIRS = SVector(DSPos(0,1),
+                        DSPos(1,1),
+                        DSPos(1,0),
+                        DSPos(1,-1),
+                        DSPos(0,-1),
+                        DSPos(-1,-1),
+                        DSPos(-1,0),
+                        DSPos(-1,1),
+                        DSPos(0,0))
+loc_dict = Dict((OBS_DIRS[i]) => loc_obs[i] for i in 1:(length(loc_obs)-1)) #<- don't want last element (:OUT) in loc_obs in this dict
+
+
+id_obs = [:T,:B,:D,:N]
 
 function perm(v,t)
     return vec(collect(Base.Iterators.product(Base.Iterators.repeated(v, t)...)))
 end
 
+
+
+# Return probability of observing entity's positions given current state and action
+function posObs(entity,s,a)
+    rel_pos = s.quad - s.entities[findfirst(entity .== s.identities)]
+    
+    if haskey(loc_dict,rel_pos)
+        direction = loc_dict[rel_pos]
+    else
+        return [0,0,0,0,0,0,0,0,0,1]
+    end
+
+
+    prob_dict = Dict(:N =>  [1.0,0,0,0,0,0,0,0,0,0],
+                     :NE => [0,1.0,0,0,0,0,0,0,0,0],
+                     :E =>  [0,0,1.0,0,0,0,0,0,0,0],
+                     :SE => [0,0,0,1.0,0,0,0,0,0,0],
+                     :S =>  [0,0,0,0,1.0,0,0,0,0,0],
+                     :SW => [0,0,0,0,0,1.0,0,0,0,0],
+                     :W =>  [0,0,0,0,0,0,1.0,0,0,0],
+                     :NW => [0,0,0,0,0,0,0,1.0,0,0],
+                     :CEN =>[0,0,0,0,0,0,0,0,1.0,0])
+
+
+    return prob_dict[direction]
+
+end
+
 # given the entity, what is the probability it is observed as any entity
-function Z(entity,s)
+function idObs(entity,s)
     if norm(s.quad - s.entities[findfirst(entity .== s.identities)]) >= 1.5
         return [0.0, 0.0, 0.0, 1.0]
     elseif entity == :T 
@@ -33,7 +63,8 @@ function Z(entity,s)
         # return [0.05, 0.05, 0.9, 0.0]
     end
 end
-obs = perm(ind_obs,3)
+
+obs = vec([vcat.(v...) for v in Iterators.product(perm(id_obs,3), perm(loc_obs,3))])# perm(perm(id_obs,3),perm(loc_obs,3))
 obs2idx_dict = Dict((obs[i]) => i for i in 1:length(obs))
 idx2obs_dict = Dict((i) => obs[i] for i in 1:length(obs))
 
@@ -46,7 +77,13 @@ POMDPs.observations(pomdp::DroneSurveillancePOMDP{PerfectCam}) = 1:N_OBS_PERFECT
 POMDPs.obsindex(pomdp::DroneSurveillancePOMDP, o::Int64) = o
 
 function POMDPs.observation(pomdp::DroneSurveillancePOMDP{QuadCam}, a::Int64, s::DSState)
-    probs = (Z(s.identities[1],s) * Z(s.identities[2],s)') .* reshape(Z(s.identities[3],s), 1, 1, :)
-    probs = vec(probs)
-    return SparseCat(1:length(obs), probs)
+    id_probs = (idObs(s.identities[1],s) * idObs(s.identities[2],s)') .* reshape(idObs(s.identities[3],s), 1, 1, :)
+    id_probs = vec(id_probs)
+
+    loc_probs = (posObs(s.identities[1],s,a) * posObs(s.identities[2],s,a)') .* reshape(posObs(s.identities[3],s,a), 1, 1, :)
+    loc_probs = vec(loc_probs)
+
+    tot_probs = vec(id_probs*loc_probs')
+
+    return SparseCat(1:length(obs), tot_probs)
 end

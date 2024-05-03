@@ -9,6 +9,7 @@ using StaticArrays
 using Compose
 using Colors
 using Combinatorics
+using ParticleFilters
 
 export
     DSPos,
@@ -60,7 +61,8 @@ struct PerfectCam end
 - `discount_factor::Float64 = 0.95` the discount factor
 """
 @with_kw mutable struct DroneSurveillancePOMDP{M} <: POMDP{DSState, Int64, Int64}
-    n = 10
+    n = 5
+    num_particles = 70_000
     size::Tuple{Int64, Int64} = (n,n)
     region_A::DSPos = DSPos([1, 1])
     fov::Tuple{Int64, Int64} = (3, 3)
@@ -90,6 +92,9 @@ function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64)
     
     return 0.0
 end
+
+
+
 
 include("states.jl")
 include("actions.jl")

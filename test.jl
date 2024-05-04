@@ -31,7 +31,7 @@ RUN_C_COMPARISON = false
 # using SARSOP
 # solver = SARSOPSolver(precision=1e-0) # configure the solver
 
-solver = POMCPSolver(tree_queries=10,
+solver = POMCPSolver(tree_queries=50,
     c=1,
     default_action=ordered_actions(pomdp)[1],
     estimate_value=FORollout(ValueIterationSolver())
@@ -43,7 +43,7 @@ function BasicPOMCP.updater(p::POMCPPlanner)
     S = statetype(P)
     A = actiontype(P)
     O = obstype(P)
-    return BootstrapFilter(p.problem, 10_000)
+    return BootstrapFilter(p.problem, 50_000)
 end
 
 # solver = DESPOTSolver(K = 2000,

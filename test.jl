@@ -7,22 +7,21 @@ using QMDP
 
 # import a solver from POMDPs.jl e.g. SARSOP
 using BasicPOMCP
+using POMDPModels, ARDESPOT
 using DiscreteValueIteration
-using POMDPTools: ordered_actions
+using POMDPTools
 using POMDPs
 using POMDPTools
 using ParticleFilters
+using POMDPSimulators
+include("testing_funcs.jl")
 
 # for visualization
 using POMDPGifs
 import Cairo
 pomdp = DroneSurveillance.DroneSurveillancePOMDP() # initialize the problem 
-# @show POMDPs.initialstate(pomdp)
-# @show POMDPs.initialstate(pomdp)
-# @show POMDPs.initialstate(pomdp)
-# @show s = DroneSurveillance.DSState((1,1),false)
-# @show s_idx = DroneSurveillance.stateindex(pomdp, s)
-# @show DroneSurveillance.state_from_index(pomdp,s_idx)
+
+RUN_C_COMPARISON = false
 
 # @show pomdp.size
 
@@ -32,13 +31,12 @@ pomdp = DroneSurveillance.DroneSurveillancePOMDP() # initialize the problem
 # using SARSOP
 # solver = SARSOPSolver(precision=1e-0) # configure the solver
 
-solver = POMCPSolver(tree_queries=200,
+solver = POMCPSolver(tree_queries=10,
     c=1,
     default_action=ordered_actions(pomdp)[1],
-    #  estimate_value=FORollout(ValueIterationSolver))
-    estimate_value=FORollout(ValueIterationSolver()))
+    estimate_value=FORollout(ValueIterationSolver())
+    )
 
-# BasicPOMCP.updater = my_updater
 
 function BasicPOMCP.updater(p::POMCPPlanner)
     P = typeof(p.problem)
@@ -48,9 +46,53 @@ function BasicPOMCP.updater(p::POMCPPlanner)
     return BootstrapFilter(p.problem, 10_000)
 end
 
+# solver = DESPOTSolver(K = 2000,
+#                       D = 2000,
+#                       lambda=0.5,
+#                       bounds=IndependentBounds(-1, 1, check_terminal=true))
+
+# function ARDESPOT.updater(p::POMCPPlanner)
+#     P = typeof(p.problem)
+#     S = statetype(P)
+#     A = actiontype(P)
+#     O = obstype(P)
+#     return BootstrapFilter(p.problem, 10_000)
+# end
+
 policy = solve(solver, pomdp) # solve the problem
-@show "herh"
+# @show "herh"
 makegif(pomdp, policy, filename="gifs/out.gif")
+
+
+# @show (m,sem) = runTests(pomdp,policy,10)
+# p = makeplot([0,1,2,3],[1,4,8,32],uncert=[1,2,3,4],title="Test Plot",ylab="Y label",xlab="X label")
+# display(p)
+
+if RUN_C_COMPARISON
+    cs = [0.1, 0.5 ,2.5 ,12.5, 50]
+    averages = []
+    stddevs = []
+    times = []
+
+    for c in cs
+        solv = POMCPSolver(tree_queries=10,
+            c=c,
+            default_action=ordered_actions(pomdp)[1],
+            estimate_value=FORollout(ValueIterationSolver())
+        )
+        pol = solve(solv, pomdp) 
+        (a,s,t,_) = runTests(pomdp,pol,n_iter=2)
+
+        push!(averages,a)
+        push!(stddevs,s)
+        push!(times,t)
+    end
+
+    p = makeplot(cs, averages, title="Reward vs Exploration Constant", line_lab="Mean", ylab="Reward", xlab="c")
+    display(p) 
+    p = makeplot(cs, times, title="Execution Time vs Exploration Constant", line_lab="Mean", ylab="Time", xlab="c")
+    display(p)
+end
 
 # rs = RolloutSimulator(max_steps=10000)
 # # mdp = GridWorld()

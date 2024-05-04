@@ -61,7 +61,7 @@ struct PerfectCam end
 - `discount_factor::Float64 = 0.95` the discount factor
 """
 @with_kw mutable struct DroneSurveillancePOMDP{M} <: POMDP{DSState, Int64, Int64}
-    n = 5
+    n = 7
     num_particles = 70_000
     size::Tuple{Int64, Int64} = (n,n)
     region_A::DSPos = DSPos([4, 4])

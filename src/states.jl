@@ -89,25 +89,25 @@ end
 #     return BootstrapFilter(up.m, up.m.num_particles)
 # end
 
-function POMDPs.initialize_belief(up::our_updater, d)
-    # quad = pomdp.region_A
-    # states = DSState[]
-    # nx,ny = pomdp.size
+# function POMDPs.initialize_belief(up::our_updater, d)
+#     # quad = pomdp.region_A
+#     # states = DSState[]
+#     # nx,ny = pomdp.size
 
-    # all_possible_locs = []
-    # for x in 1:nx
-    #     for y in 1:ny
-    #         push!(all_possible_locs,DSPos(x,y))
-    #     end
-    # end
+#     # all_possible_locs = []
+#     # for x in 1:nx
+#     #     for y in 1:ny
+#     #         push!(all_possible_locs,DSPos(x,y))
+#     #     end
+#     # end
 
 
-    # for key in keys(pomdp.idPerms)
-    #     for loc in perm(all_possible_locs,3)
-    #         push!(states, DSState(quad, [loc[1], loc[2], loc[3]], key, false))
-    #     end
-    # end
+#     # for key in keys(pomdp.idPerms)
+#     #     for loc in perm(all_possible_locs,3)
+#     #         push!(states, DSState(quad, [loc[1], loc[2], loc[3]], key, false))
+#     #     end
+#     # end
     
-    @show "In the initialize_belief"
-    return Uniform(1:64_000)
-end
+#     @show "In the initialize_belief"
+#     return Uniform(1:64_000)
+# end

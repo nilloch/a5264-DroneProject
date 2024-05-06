@@ -25,7 +25,8 @@ struct DSState
     quad::DSPos
     entities::Vector{DSPos}
     identities::Vector{typeof(:thing)}
-    photo::Bool 
+    photosTaken::Int
+    photoHits::Int
 end
 
 
@@ -61,15 +62,16 @@ struct PerfectCam end
 - `discount_factor::Float64 = 0.95` the discount factor
 """
 @with_kw mutable struct DroneSurveillancePOMDP{M} <: POMDP{DSState, Int64, Int64}
-    n = 7
+    n = 5
+    maxPhotos = 5;
     num_particles = 70_000
     size::Tuple{Int64, Int64} = (n,n)
     region_A::DSPos = DSPos([4, 4])
     fov::Tuple{Int64, Int64} = (3, 3)
     agent_policy::Symbol = :restricted
     camera::M = QuadCam() # PerfectCam
-    reward_state = DSState(DSPos([-1, -1]),[DSPos([-1, -1]),DSPos([-1, -1]),DSPos([-1, -1])], [:T,:B,:D], true)
-    terminal_state::DSState = DSState(DSPos([-1, -1]),[DSPos([-1, -1]),DSPos([-1, -1]),DSPos([-1, -1])], [:T,:B,:D], false)
+    # reward_state = DSState(DSPos([-1, -1]),[DSPos([-1, -1]),DSPos([-1, -1]),DSPos([-1, -1])], [:T,:B,:D], true)
+    terminal_state::DSState = DSState(DSPos([-1, -1]),[DSPos([-1, -1]),DSPos([-1, -1]),DSPos([-1, -1])], [:T,:B,:D], 0, 0)
     discount_factor::Float64 = 0.95
     #our stuff
     ids = [:T,:B,:D]
@@ -81,9 +83,9 @@ end
 POMDPs.isterminal(pomdp::DroneSurveillancePOMDP, s::DSState) = s == pomdp.terminal_state
 POMDPs.discount(pomdp::DroneSurveillancePOMDP) = pomdp.discount_factor
 
-function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64)
-    if s == pomdp.reward_state
-        return 2.0
+function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64, sp::DSState)
+    if !(0.0 < sp.quad[1] <= pomdp.size[1]) || !(0.0 < sp.quad[2] <= pomdp.size[2]) 
+        return 2.0*s.photoHits
     end
     
     if s.quad == s.entities[findfirst(:D .== s.identities)]

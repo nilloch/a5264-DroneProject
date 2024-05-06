@@ -79,7 +79,7 @@ function idObs(entity,s)
     end
 end
 
-obs = vec([vcat.(v...) for v in Iterators.product(perm(id_obs,3), perm(loc_obs,3))])# perm(perm(id_obs,3),perm(loc_obs,3))
+obs = perm(id_obs,3)
 obs2idx_dict = Dict((obs[i]) => i for i in 1:length(obs))
 idx2obs_dict = Dict((i) => obs[i] for i in 1:length(obs))
 
@@ -92,13 +92,7 @@ POMDPs.observations(pomdp::DroneSurveillancePOMDP{PerfectCam}) = 1:N_OBS_PERFECT
 POMDPs.obsindex(pomdp::DroneSurveillancePOMDP, o::Int64) = o
 
 function POMDPs.observation(pomdp::DroneSurveillancePOMDP{QuadCam}, a::Int64, s::DSState)
-    id_probs = (idObs(s.identities[1],s) * idObs(s.identities[2],s)') .* reshape(idObs(s.identities[3],s), 1, 1, :)
-    id_probs = vec(id_probs)
-
-    loc_probs = (posObs(s.identities[1],s,a) * posObs(s.identities[2],s,a)') .* reshape(posObs(s.identities[3],s,a), 1, 1, :)
-    loc_probs = vec(loc_probs)
-
-    tot_probs = vec(id_probs*loc_probs')
-
-    return SparseCat(1:length(obs), tot_probs)
+    probs = (idObs(s.identities[1],s) * idObs(s.identities[2],s)') .* reshape(idObs(s.identities[3],s), 1, 1, :)
+    probs = vec(probs)
+    return SparseCat(1:length(obs), probs)
 end

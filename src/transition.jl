@@ -1,36 +1,28 @@
+function hit(pomdp::DroneSurveillancePOMDP, s::DSState)
+    id = findfirst(x -> x == s.quad, pomdp.entities)
+    if isnothing(id)
+        return false
+    else
+        return s.identities[id] == :T
+    end
+    
+end
+
 function POMDPs.transition(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64)
     # move quad
     new_quad  = s.quad + ACTION_DIRS[a]
-    if !(0 < new_quad[1] <= pomdp.size[1]) || !(0 < new_quad[2] <= pomdp.size[2]) 
-        # if isterminal(pomdp, s) || s==pomdp.reward_state
-        #     return Deterministic(pomdp.terminal_state) # the function is not type stable, returns either Deterministic or SparseCat
+    if !(0 < new_quad[1] <= pomdp.size[1]) || !(0 < new_quad[2] <= pomdp.size[2]) || isterminal(pomdp, s)
+        return Deterministic(pomdp.terminal_state)
+    elseif (a == 6) && (s.photosTaken < pomdp.maxPhotos) && (s.photoHits <= s.photosTaken) #takes photo (:photo => 6)
+        # if s.photoHits == 5
+        #     @show "STOOOOOPPPPP"
         # end
-        if s.photo && !isterminal(pomdp, s) && s!=pomdp.reward_state
-            return Deterministic(pomdp.reward_state)
-        else 
-            return Deterministic(pomdp.terminal_state)
+        if hit(pomdp, s)
+            return Deterministic(DSState(new_quad,s.entities,s.identities,s.photosTaken + 1, s.photoHits + 1))
+        else
+            return Deterministic(DSState(new_quad,s.entities,s.identities,s.photosTaken + 1, s.photoHits))
         end
-
-    elseif (new_quad == s.entities[findfirst(:T .== s.identities)]) #takes photo
-        return Deterministic(DSState(new_quad,s.entities,s.identities,true)) # the function is not type stable, returns either Deterministic or SparseCat
     else
-        return Deterministic(DSState(new_quad,s.entities,s.identities,s.photo))
+        return Deterministic(DSState(new_quad,s.entities,s.identities,s.photosTaken, s.photoHits))
     end
-end
-
-"""
-    agent_inbounds(pomdp::DroneSurveillancePOMDP, s::DSPos)
-returns true if s in an authorized position for the ground agent
-s must be on the grid and outside of the surveyed regions
-"""
-function agent_inbounds(pomdp::DroneSurveillancePOMDP, s::DSPos)
-    if !(0 < s[1] <= pomdp.size[1]) || !(0 < s[2] <= pomdp.size[2])
-        return false
-    end
-    if pomdp.agent_policy == :restricted 
-        if s == pomdp.region_A || s == pomdp.target
-            return false 
-        end
-    end
-    return true
 end

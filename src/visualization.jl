@@ -16,16 +16,31 @@ function POMDPTools.render(pomdp::DroneSurveillancePOMDP, step;
             clr = "black"
         end
 
-        if DSPos(x, y) == step[:s].entities[findfirst(:T .== step[:s].identities)]
-            clr = "green"
-        end
+        # idx = findfirst(:T .== step[:s].identities)
+        # if !isnothing(idx) && DSPos(x, y) == step[:s].entities[idx]
+        #     clr = "green"
+        # end
 
-        if DSPos(x, y) == step[:s].entities[findfirst(:B .== step[:s].identities)]
-            clr = "yellow"
-        end
+        # idx = findfirst(:B .== step[:s].identities)
+        # if !isnothing(idx) && DSPos(x, y) == step[:s].entities[idx]
+        #     clr = "yellow"
+        # end
 
-        if DSPos(x, y) == step[:s].entities[findfirst(:D .== step[:s].identities)]
-            clr = "red"
+        # idx = findfirst(:D .== step[:s].identities)
+        # if !isnothing(idx) && DSPos(x, y) == step[:s].entities[idx]
+        #     clr = "red"
+        # end
+
+        for (i,en) in enumerate(step[:s].entities)
+            if en == DSPos(x, y)
+                if pomdp.ids[i] == :T
+                    clr = "green"
+                elseif pomdp.ids[i] == :D
+                    clr = "red"
+                else pomdp.ids[i] == :B
+                    clr = "yellow"
+                end
+            end
         end
 
         # if DSPos(x, y) == pomdp.detector

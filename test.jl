@@ -28,14 +28,14 @@ RUN_C_COMPARISON = false
 # # POMDPs.observation(pomdp::DroneSurveillancePOMDP{QuadCam}, a::Int64, s::DSState)
 # @show POMDPs.observation(pomdp,1,s)
 
-# using SARSOP
-# solver = SARSOPSolver(precision=1e-0) # configure the solver
+using SARSOP
+solver = SARSOPSolver(precision=1e-0) # configure the solver
 
-solver = POMCPSolver(tree_queries=5000,
-    c=0.01,
-    default_action=ordered_actions(pomdp)[1],
-    estimate_value=FORollout(ValueIterationSolver())
-    )
+# solver = POMCPSolver(tree_queries=5000,
+#     c=0.01,
+#     default_action=ordered_actions(pomdp)[1],
+#     estimate_value=FORollout(ValueIterationSolver())
+#     )
 
 
 function BasicPOMCP.updater(p::POMCPPlanner)

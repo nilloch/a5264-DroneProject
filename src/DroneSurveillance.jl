@@ -48,6 +48,10 @@ it is in its field of view.
 """
 struct PerfectCam end
 
+function perm(v,t)
+    return vec(collect(Base.Iterators.product(Base.Iterators.repeated(v, t)...)))
+end
+
 """
     DroneSurveillancePOMDP{M} <: POMDP{DSState, Int64, Int64}
 
@@ -66,7 +70,7 @@ struct PerfectCam end
     maxPhotos = 5;
     num_particles = 70_000
     size::Tuple{Int64, Int64} = (n,n)
-    region_A::DSPos = DSPos([4, 4])
+    region_A::DSPos = DSPos([1, 1])
     fov::Tuple{Int64, Int64} = (3, 3)
     agent_policy::Symbol = :restricted
     camera::M = QuadCam() # PerfectCam
@@ -75,9 +79,10 @@ struct PerfectCam end
     discount_factor::Float64 = 0.95
     #our stuff
     ids = [:T,:B,:D]
-    idPerms = Dict(p => i for (i,p) in enumerate(multiset_permutations(ids,3)))
+    num_entities = 3
     # entities = [DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])])]
     entities = [DSPos([1,n]), DSPos([n,1]), DSPos([n,n])]
+    idPerms = Dict([p[1],p[2],p[3]] => i for (i,p) in enumerate(perm(ids, length(entities)))) # allow entities to be whatever
 end
 
 POMDPs.isterminal(pomdp::DroneSurveillancePOMDP, s::DSState) = s == pomdp.terminal_state
@@ -88,7 +93,8 @@ function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64, sp::
         return 2.0*s.photoHits
     end
     
-    if s.quad == s.entities[findfirst(:D .== s.identities)]
+    idx = findfirst(:D .== s.identities)
+    if !isnothing(idx) && s.quad == s.entities[idx]
         return -1.0
     end
     

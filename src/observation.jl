@@ -63,18 +63,18 @@ function idObs(entity,s)
         return [0.0, 0.0, 0.0, 1.0]
     elseif entity == :T 
         # return [0.5, 0.25, 0.25, 0.0]
-        # return [.7, 0.1, 0.1, 0.1]
-        return [1.0, 0.0, 0.0, 0.0]
+        return [.7, 0.1, 0.1, 0.1]
+        # return [1.0, 0.0, 0.0, 0.0]
         # return [0.9, 0.05, 0.05, 0.0]
     elseif entity == :B
         # return [0.25, 0.5, 0.25, 0.0]
-        # return [.1, 0.7, 0.1, 0.1]
-        return [0.0, 1.0, 0.0, 0.0]
+        return [.1, 0.7, 0.1, 0.1]
+        # return [0.0, 1.0, 0.0, 0.0]
         # return [0.05, 0.9, 0.05, 0.0]
     elseif entity == :D
         # return [0.25, 0.25, 0.5, 0.0]
-        # return [.1, 0.1, 0.7, 0.1]
-        return [0.0, 0.0, 1.0, 0.0]
+        return [.1, 0.1, 0.7, 0.1]
+        # return [0.0, 0.0, 1.0, 0.0]
         # return [0.05, 0.05, 0.9, 0.0]
     end
 end

@@ -2,7 +2,7 @@ using Statistics
 using POMDPTools
 using Plots
 
-function runTests(m,policy;n_iter=100, max_steps=1000)
+function runTests(m,policy;n_iter=100, max_steps=200)
     res = []
     times = []
     rs = RolloutSimulator(max_steps=max_steps)
@@ -38,8 +38,9 @@ function makeplot(x,y;title="", xlab="", ylab="", line_lab="", uncert=nothing, u
                  yguidefontsize=lfs,
                  ytickfontsize=tfs, 
                  xtickfontsize=tfs, 
-                 legendfontsize=tfs)
-        plot!(p,x,y,linewidth=lw,c="blue",label=line_lab)
+                 legendfontsize=tfs,
+                 xaxis=:log)
+        plot!(p,x,y,linewidth=lw,c="blue",label=line_lab,xaxis=:log)
     else
         p = plot(x,y, 
                  linewidth=lw,
@@ -48,7 +49,9 @@ function makeplot(x,y;title="", xlab="", ylab="", line_lab="", uncert=nothing, u
                  ytickfontsize=tfs, 
                  xtickfontsize=tfs, 
                  legendfontsize=tfs,
-                 label=line_lab)
+                 label=line_lab,
+                 xaxis= :log,
+                 yaxis= :log)
     end
     title!(p,title)
     xlabel!(p,xlab)

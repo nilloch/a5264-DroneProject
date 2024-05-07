@@ -72,7 +72,7 @@ end
     fov::Tuple{Int64, Int64} = (3, 3)
     agent_policy::Symbol = :restricted
     camera::M = QuadCam() # PerfectCam
-    discount_factor::Float64 = 0.98
+    discount_factor::Float64 = 0.9
     #our stuff
     ids = [:T,:B,:D]
     # entities = [DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])])]
@@ -88,9 +88,10 @@ POMDPs.discount(pomdp::DroneSurveillancePOMDP) = pomdp.discount_factor
 
 function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64, sp::DSState)
     # if !isterminal(pomdp,s) 
+    tot_reward = 0
     if !isterminal(pomdp,s) && isterminal(pomdp,sp) 
         T_idxs = findall(x -> x==:T, s.identities)
-        return sum([en in T_idxs ? 2 : 0 for en in unique(s.photoHits)])
+        tot_reward += sum([en in T_idxs ? 2 : 0 for en in unique(s.photoHits)])
     end
     # T_idxs = findall(x -> x==:T, s.identities)
     # if a == 6 && s.quad in s.entities[findall(:T .== s.identities)]
@@ -109,10 +110,10 @@ function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64, sp::
     
     idx = findfirst(:D .== s.identities)
     if !isnothing(idx) && s.quad == pomdp.entities[idx]
-        return -1.0
+        tot_reward += -1.0
     end
     
-    return -0.01
+    return tot_reward
 end
 
 include("states.jl")

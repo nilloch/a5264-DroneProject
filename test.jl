@@ -70,8 +70,11 @@ end
 
 policy = solve(solver, pomdp) # solve the problem
 # @show "herh"
-makegif(pomdp, policy, filename="gifs/out.gif",max_steps=100)
 
+makegif(pomdp, policy, filename="gifs/out.gif",max_steps=200)
+# for i in 1:15
+#     makegif(pomdp, policy, filename="gifs/out"*string(i)*".gif",max_steps=200)
+# end
 
 # @show (m,sem) = runTests(pomdp,policy,10)
 # p = makeplot([0,1,2,3],[1,4,8,32],uncert=[1,2,3,4],title="Test Plot",ylab="Y label",xlab="X label")

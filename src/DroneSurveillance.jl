@@ -65,22 +65,22 @@ end
 """
 @with_kw mutable struct DroneSurveillancePOMDP{M} <: POMDP{DSState, Int64, Int64}
     n = 5
-    maxPhotos = 2;
+    maxPhotos = 3;
     num_particles = 70_000
     size::Tuple{Int64, Int64} = (n,n)
     region_A::DSPos = DSPos([1, 1])
     fov::Tuple{Int64, Int64} = (3, 3)
     agent_policy::Symbol = :restricted
     camera::M = QuadCam() # PerfectCam
-    discount_factor::Float64 = 0.95
+    discount_factor::Float64 = 0.98
     #our stuff
     ids = [:T,:B,:D]
     # entities = [DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])])]
-    entities = [DSPos([1,n]), DSPos([n,1]), DSPos([n,n])]
+    entities = [DSPos([1,n]), DSPos([n,1]), DSPos([n,n]), DSPos([3,3])]
     num_entities = length(entities)
-    idPerms = Dict([p[1],p[2],p[3]] => i for (i,p) in enumerate(perm(ids, num_entities))) # allow entities to be whatever
-    
-    terminal_state::DSState = DSState(DSPos([-1, -1]), [:T,:B,:D], repeat([-1],maxPhotos))
+    idPerms = Dict([p[1],p[2],p[3],p[4]] => i for (i,p) in enumerate(perm(ids, num_entities))) # allow entities to be whatever
+    # [p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9]]
+    terminal_state::DSState = DSState(DSPos([-1, -1]), repeat([:T],num_entities), repeat([-1],maxPhotos))
 end
 
 POMDPs.isterminal(pomdp::DroneSurveillancePOMDP, s::DSState) = s == pomdp.terminal_state
@@ -112,7 +112,7 @@ function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64, sp::
         return -1.0
     end
     
-    return -0.0
+    return -0.01
 end
 
 include("states.jl")

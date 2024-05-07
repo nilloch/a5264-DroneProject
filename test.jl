@@ -39,7 +39,7 @@ RUN_C_COMPARISON = false
 #                     verbose=true
 #                    ) 
 
-solver = POMCPSolver(tree_queries=10000,
+solver = POMCPSolver(tree_queries=5000,
     c=1,
     default_action=ordered_actions(pomdp)[1],
     estimate_value=FORollout(ValueIterationSolver())
@@ -111,15 +111,15 @@ end
 # global r_sum = 0.0
 # global bruh = 0
 
-for (b, s, a, o, r) in stepthrough(pomdp, policy, "b,s,a,o,r"; max_steps=100)
-    # bruh += 1
-    # println("Step $step")
-    @show s
-    @show a
-    @show o
-    @show r
-    # r_sum += r
-    # @show r_sum
-    println()
-end
+# for (b, s, a, o, r) in stepthrough(pomdp, policy, "b,s,a,o,r"; max_steps=100)
+#     # bruh += 1
+#     # println("Step $step")
+#     @show s
+#     @show a
+#     @show o
+#     @show r
+#     # r_sum += r
+#     # @show r_sum
+#     println()
+# end
 

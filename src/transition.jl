@@ -16,15 +16,16 @@ function POMDPs.transition(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64)
         return Deterministic(pomdp.terminal_state)
     end
     
+    temp = copy(s.photoHits)
     if (a == 6) && s.photoHits[1] == 0 #takes photo (:photo => 6)
         # if s.photoHits == 5
         #     @show "STOOOOOPPPPP"
         # end
         id = snap(pomdp, s)
-        popfirst!(s.photoHits)
-        push!(s.photoHits, id)
+        popfirst!(temp)
+        push!(temp, id)
     end
     
-    return Deterministic(DSState(new_quad, s.identities, s.photoHits))
+    return Deterministic(DSState(new_quad, s.identities, temp))
     
 end

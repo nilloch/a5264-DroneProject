@@ -65,7 +65,7 @@ end
 """
 @with_kw mutable struct DroneSurveillancePOMDP{M} <: POMDP{DSState, Int64, Int64}
     n = 5
-    maxPhotos = 3;
+    maxPhotos = 2;
     num_particles = 70_000
     size::Tuple{Int64, Int64} = (n,n)
     region_A::DSPos = DSPos([1, 1])
@@ -88,10 +88,10 @@ POMDPs.discount(pomdp::DroneSurveillancePOMDP) = pomdp.discount_factor
 
 function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64, sp::DSState)
     # if !isterminal(pomdp,s) 
-    # if !isterminal(pomdp,s) && isterminal(pomdp,sp) 
-    #     T_idxs = findall(x -> x==:T, s.identities)
-    #     return sum([en in T_idxs ? 2 : 0 for en in unique(s.photoHits)])
-    # end
+    if !isterminal(pomdp,s) && isterminal(pomdp,sp) 
+        T_idxs = findall(x -> x==:T, s.identities)
+        return sum([en in T_idxs ? 2 : 0 for en in unique(s.photoHits)])
+    end
     # T_idxs = findall(x -> x==:T, s.identities)
     # if a == 6 && s.quad in s.entities[findall(:T .== s.identities)]
     #     # return 2
@@ -100,9 +100,9 @@ function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64, sp::
     # T_idxs = findall(x -> x==:T, s.identities)
     # return sum([en in T_idxs ? 2 : 0 for en in unique(s.photoHits)])
 
-    if s.photoHits[1]==0 && a==6 && s.quad in pomdp.entities
-        return 20.0
-    end
+    # if s.photoHits[1]==0 && a==6 && s.quad in pomdp.entities
+    #     return 20.0
+    # end
 
 
 

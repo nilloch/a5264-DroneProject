@@ -50,7 +50,7 @@ function POMDPs.initialstate(pomdp::DroneSurveillancePOMDP)
     initial_photos = zeros(pomdp.maxPhotos)
     
     for key in keys(pomdp.idPerms)
-        push!(states, DSState(quad, [:T,:T,:T], initial_photos))
+        push!(states, DSState(quad, key, initial_photos))
     end
     return Uniform(states)
 end

@@ -32,7 +32,7 @@ function POMDPTools.render(pomdp::DroneSurveillancePOMDP, step;
         #     clr = "red"
         # end
 
-        for (i,en) in enumerate(step[:s].entities)
+        for (i,en) in enumerate(pomdp.entities)
             if en == DSPos(x, y)
                 if step[:s].identities[i] == :T
                     clr = "green"

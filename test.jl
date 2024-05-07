@@ -70,7 +70,7 @@ end
 
 policy = solve(solver, pomdp) # solve the problem
 # @show "herh"
-# makegif(pomdp, policy, filename="gifs/out.gif",max_steps=100)
+makegif(pomdp, policy, filename="gifs/out.gif",max_steps=100)
 
 
 # @show (m,sem) = runTests(pomdp,policy,10)

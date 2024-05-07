@@ -10,8 +10,8 @@ function POMDPs.transition(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64)
         else 
             return Deterministic(pomdp.terminal_state)
         end
-
-    elseif (new_quad == pomdp.entities[findfirst(:T .== s.identities)]) #takes photo
+        # Might need to make not just find first
+    elseif !isnothing(findall(:T .== s.identities)) && (new_quad in pomdp.entities[findall(:T .== s.identities)]) #takes photo
         return Deterministic(DSState(new_quad,s.entities,s.identities,true)) # the function is not type stable, returns either Deterministic or SparseCat
     else
         return Deterministic(DSState(new_quad,s.entities,s.identities,s.photo))

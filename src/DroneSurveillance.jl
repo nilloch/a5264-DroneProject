@@ -59,21 +59,34 @@ struct PerfectCam end
 - `terminal_state::DSState = DSState([-1, -1], [-1, -1])` a sentinel state to encode terminal states
 - `discount_factor::Float64 = 0.95` the discount factor
 """
+Nbadcode = 7
+entityVec = []
+for j in 1:5
+    push!(entityVec,DSPos([rand(1:Nbadcode),rand(1:Nbadcode)]))
+end
 @with_kw mutable struct DroneSurveillancePOMDP{M} <: POMDP{DSState, Int64, Int64}
-    n = 10
+    n = Nbadcode
     size::Tuple{Int64, Int64} = (n,n)
     region_A::DSPos = DSPos([1, 1])
     fov::Tuple{Int64, Int64} = (3, 3)
     agent_policy::Symbol = :restricted
     camera::M = QuadCam() # PerfectCam
-    reward_state = DSState(DSPos([-1, -1]),[DSPos([-1, -1]),DSPos([-1, -1]),DSPos([-1, -1])], [:T,:B,:D], true)
-    terminal_state::DSState = DSState(DSPos([-1, -1]),[DSPos([-1, -1]),DSPos([-1, -1]),DSPos([-1, -1])], [:T,:B,:D], false)
-    discount_factor::Float64 = 0.95
+    # reward_state = DSState(DSPos([-1, -1]),[DSPos([-1, -1]),DSPos([-1, -1]),DSPos([-1, -1])], [:T,:B,:D], true)
+    # terminal_state::DSState = DSState(DSPos([-1, -1]),[DSPos([-1, -1]),DSPos([-1, -1]),DSPos([-1, -1])], [:T,:B,:D], false)
+    discount_factor::Float64 = 0.99
     #our stuff
     ids = [:T,:B,:D]
-    idPerms = Dict(p => i for (i,p) in enumerate(multiset_permutations(ids,3)))
-    entities = [DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])])]
+    # idPerms = Dict(p => i for (i,p) in enumerate(multiset_permutations(ids,3)))
+    entities = entityVec
+    # entities = [DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])])]
     # entities = [DSPos([1,5]),DSPos([5,1]),DSPos([5,5])]
+    # entities = [DSPos([1,n]), DSPos([n,1]), DSPos([n,n]), DSPos([3,3])]
+    num_entities = length(entities)
+    idPerms = Dict([p[1],p[2],p[3],p[4],p[5]] => i for (i,p) in enumerate(perm(ids, num_entities))) # allow entities to be whatever
+    
+    reward_state::DSState = DSState(DSPos([-1, -1]), repeat([DSPos([-1, -1])],num_entities),repeat([:T],num_entities), true)
+    terminal_state::DSState = DSState(DSPos([-1, -1]), repeat([DSPos([-1, -1])],num_entities),repeat([:T],num_entities), false)
+    # [p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9]]
 end
 
 POMDPs.isterminal(pomdp::DroneSurveillancePOMDP, s::DSState) = s == pomdp.terminal_state
@@ -84,11 +97,14 @@ function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64)
         return 2.0
     end
     
-    if s.quad == s.entities[findfirst(:D .== s.identities)]
-        return -1.0
+    detPos = s.entities[findall(:D .== s.identities)]
+    if !isnothing(detPos)
+        if s.quad in detPos
+            return -1.0
+        end
     end
     
-    return 0.0
+    return -0.01
 end
 
 include("states.jl")

@@ -31,8 +31,8 @@ RUN_C_COMPARISON = false
 # using SARSOP
 # solver = SARSOPSolver(precision=1e-0) # configure the solver
 
-# solver = POMCPSolver(tree_queries=50,
-#     c=1,
+# solver = POMCPSolver(tree_queries=10000,
+#     c=0.05,
 #     default_action=ordered_actions(pomdp)[1],
 #     estimate_value=FORollout(ValueIterationSolver())
 #     )
@@ -65,8 +65,8 @@ solver = QMDPSolver(max_iterations=20,
                    ) 
 
 policy = solve(solver, pomdp) # solve the problem
-# @show "herh"
-makegif(pomdp, policy, filename="gifs/out.gif")
+@show "herh"
+makegif(pomdp, policy, filename="gifs/out.gif",max_steps=40)
 
 
 # @show (m,sem) = runTests(pomdp,policy,10)

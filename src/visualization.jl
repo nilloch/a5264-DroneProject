@@ -16,16 +16,27 @@ function POMDPTools.render(pomdp::DroneSurveillancePOMDP, step;
             clr = "black"
         end
 
-        if DSPos(x, y) == step[:s].entities[findfirst(:T .== step[:s].identities)]
-            clr = "green"
-        end
+        # if DSPos(x, y) == step[:s].entities[findfirst(:T .== step[:s].identities)]
+        #     clr = "green"
+        # end
 
-        if DSPos(x, y) == step[:s].entities[findfirst(:B .== step[:s].identities)]
-            clr = "yellow"
-        end
+        # if DSPos(x, y) == step[:s].entities[findfirst(:B .== step[:s].identities)]
+        #     clr = "yellow"
+        # end
 
-        if DSPos(x, y) == step[:s].entities[findfirst(:D .== step[:s].identities)]
-            clr = "red"
+        # if DSPos(x, y) == step[:s].entities[findfirst(:D .== step[:s].identities)]
+        #     clr = "red"
+        # end
+        for (i,en) in enumerate(pomdp.entities)
+            if en == DSPos(x, y)
+                if step[:s].identities[i] == :T
+                    clr = "green"
+                elseif step[:s].identities[i] == :D
+                    clr = "red"
+                else step[:s].identities[i] == :B
+                    clr = "yellow"
+                end
+            end
         end
 
         # if DSPos(x, y) == pomdp.detector

@@ -40,7 +40,7 @@ RUN_C_COMPARISON = false
 #                    ) 
 
 solver = POMCPSolver(tree_queries=5000,
-    c=1,
+    c=10,
     default_action=ordered_actions(pomdp)[1],
     estimate_value=FORollout(ValueIterationSolver())
     # estimate_value=FORollout(FunctionPolicy(s->rand(actions(pomdp))))

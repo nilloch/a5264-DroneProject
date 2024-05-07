@@ -79,7 +79,7 @@ function idObs(pomdp,entity,s)
     end
 end
 
-obs = perm(id_obs,4)
+obs = perm(id_obs,3)
 obs2idx_dict = Dict((obs[i]) => i for i in 1:length(obs))
 idx2obs_dict = Dict((i) => obs[i] for i in 1:length(obs))
 

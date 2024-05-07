@@ -76,9 +76,9 @@ end
     #our stuff
     ids = [:T,:B,:D]
     # entities = [DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])])]
-    entities = [DSPos([1,n]), DSPos([n,1]), DSPos([n,n]), DSPos([3,3])]
+    entities = [DSPos([1,n]), DSPos([n,1]), DSPos([5,5])]
     num_entities = length(entities)
-    idPerms = Dict([p[1],p[2],p[3],p[4]] => i for (i,p) in enumerate(perm(ids, num_entities))) # allow entities to be whatever
+    idPerms = Dict([p[1],p[2],p[3]] => i for (i,p) in enumerate(perm(ids, num_entities))) # allow entities to be whatever
     # [p[1],p[2],p[3],p[4],p[5],p[6],p[7],p[8],p[9]]
     terminal_state::DSState = DSState(DSPos([-1, -1]), repeat([:T],num_entities), repeat([-1],maxPhotos))
 end
@@ -91,7 +91,9 @@ function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64, sp::
     tot_reward = 0
     if !isterminal(pomdp,s) && isterminal(pomdp,sp) 
         T_idxs = findall(x -> x==:T, s.identities)
-        tot_reward += sum([en in T_idxs ? 2 : 0 for en in unique(s.photoHits)])
+        temp = [en in T_idxs ? 10 : 0 for en in unique(s.photoHits)]
+        filter!(e->e!=0,temp)
+        tot_reward += sum([i*t for (i,t) in enumerate(temp)])
     end
     # T_idxs = findall(x -> x==:T, s.identities)
     # if a == 6 && s.quad in s.entities[findall(:T .== s.identities)]
@@ -105,12 +107,16 @@ function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64, sp::
     #     return 20.0
     # end
 
+    if sp.photoHits != s.photoHits && s.quad in pomdp.entities[findall(x -> x==:T, s.identities)]
+        tot_reward += 0.25
+    end
+
 
 
     
     idx = findfirst(:D .== s.identities)
     if !isnothing(idx) && s.quad == pomdp.entities[idx]
-        tot_reward += -1.0
+        tot_reward += -10.0
     end
     
     return tot_reward

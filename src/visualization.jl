@@ -4,6 +4,7 @@ function POMDPTools.render(pomdp::DroneSurveillancePOMDP, step;
     cells = []
     @show step[:s]
     @show step[:r]
+    @show step[:a]
     for x in 1:nx, y in 1:ny
         ctx = cell_ctx((x,y), (nx,ny))
         clr = "white"
@@ -33,11 +34,11 @@ function POMDPTools.render(pomdp::DroneSurveillancePOMDP, step;
 
         for (i,en) in enumerate(step[:s].entities)
             if en == DSPos(x, y)
-                if pomdp.ids[i] == :T
+                if step[:s].identities[i] == :T
                     clr = "green"
-                elseif pomdp.ids[i] == :D
+                elseif step[:s].identities[i] == :D
                     clr = "red"
-                else pomdp.ids[i] == :B
+                else step[:s].identities[i] == :B
                     clr = "yellow"
                 end
             end

@@ -1,9 +1,10 @@
-function hit(pomdp::DroneSurveillancePOMDP, s::DSState)
-    id = findfirst(x -> x == s.quad, pomdp.entities)
+function snap(pomdp::DroneSurveillancePOMDP, s::DSState)
+    #"snaps" a photo... hahaha
+    id = findfirst([s.quad == en for en in pomdp.entities])
     if isnothing(id)
-        return false
+        return pomdp.num_entities+1
     else
-        return s.identities[id] == :T
+        return id
     end
     
 end
@@ -13,16 +14,17 @@ function POMDPs.transition(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64)
     new_quad  = s.quad + ACTION_DIRS[a]
     if !(0 < new_quad[1] <= pomdp.size[1]) || !(0 < new_quad[2] <= pomdp.size[2]) || isterminal(pomdp, s)
         return Deterministic(pomdp.terminal_state)
-    elseif (a == 6) && (s.photosTaken < pomdp.maxPhotos) && (s.photoHits <= s.photosTaken) #takes photo (:photo => 6)
+    end
+    
+    if (a == 6) && s.photoHits[1] == 0 #takes photo (:photo => 6)
         # if s.photoHits == 5
         #     @show "STOOOOOPPPPP"
         # end
-        if hit(pomdp, s)
-            return Deterministic(DSState(new_quad,s.entities,s.identities,s.photosTaken + 1, s.photoHits + 1))
-        else
-            return Deterministic(DSState(new_quad,s.entities,s.identities,s.photosTaken + 1, s.photoHits))
-        end
-    else
-        return Deterministic(DSState(new_quad,s.entities,s.identities,s.photosTaken, s.photoHits))
+        id = snap(pomdp, s)
+        popfirst!(s.photoHits)
+        push!(s.photoHits, id)
     end
+    
+    return Deterministic(DSState(new_quad, s.identities, s.photoHits))
+    
 end

@@ -58,8 +58,8 @@ function posObs(entity,s,a)
 end
 
 # given the entity, what is the probability it is observed as any entity
-function idObs(entity,s)
-    if norm(s.quad - s.entities[findfirst(entity .== s.identities)]) >= 1.5
+function idObs(pomdp,entity,s)
+    if norm(s.quad - pomdp.entities[findfirst(entity .== s.identities)]) >= 1.5
         return [0.0, 0.0, 0.0, 1.0]
     elseif entity == :T 
         # return [0.5, 0.25, 0.25, 0.0]
@@ -92,7 +92,7 @@ POMDPs.observations(pomdp::DroneSurveillancePOMDP{PerfectCam}) = 1:N_OBS_PERFECT
 POMDPs.obsindex(pomdp::DroneSurveillancePOMDP, o::Int64) = o
 
 function POMDPs.observation(pomdp::DroneSurveillancePOMDP{QuadCam}, a::Int64, s::DSState)
-    probs = (idObs(s.identities[1],s) * idObs(s.identities[2],s)') .* reshape(idObs(s.identities[3],s), 1, 1, :)
+    probs = (idObs(pomdp,s.identities[1],s) * idObs(pomdp,s.identities[2],s)') .* reshape(idObs(pomdp,s.identities[3],s), 1, 1, :)
     probs = vec(probs)
     return SparseCat(1:length(obs), probs)
 end

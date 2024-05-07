@@ -28,14 +28,23 @@ RUN_C_COMPARISON = false
 # # POMDPs.observation(pomdp::DroneSurveillancePOMDP{QuadCam}, a::Int64, s::DSState)
 # @show POMDPs.observation(pomdp,1,s)
 
-using SARSOP
-solver = SARSOPSolver(precision=1e-0) # configure the solver
+# using NativeSARSOP
+# using SARSOP
+# solver = SARSOPSolver(precision=1e-0) # configure the solver
 
-# solver = POMCPSolver(tree_queries=5000,
-#     c=0.01,
-#     default_action=ordered_actions(pomdp)[1],
-#     estimate_value=FORollout(ValueIterationSolver())
-#     )
+
+# using QMDP
+# solver = QMDPSolver(max_iterations=20,
+#                     belres=1e-10,
+#                     verbose=true
+#                    ) 
+
+solver = POMCPSolver(tree_queries=10000,
+    c=1,
+    default_action=ordered_actions(pomdp)[1],
+    estimate_value=FORollout(ValueIterationSolver())
+    # estimate_value=FORollout(FunctionPolicy(s->rand(actions(pomdp))))
+    )
 
 
 function BasicPOMCP.updater(p::POMCPPlanner)
@@ -43,7 +52,7 @@ function BasicPOMCP.updater(p::POMCPPlanner)
     S = statetype(P)
     A = actiontype(P)
     O = obstype(P)
-    return BootstrapFilter(p.problem, 100)
+    return BootstrapFilter(p.problem, 1000)
 end
 
 # solver = DESPOTSolver(K = 2000,
@@ -61,7 +70,7 @@ end
 
 policy = solve(solver, pomdp) # solve the problem
 # @show "herh"
-makegif(pomdp, policy, filename="gifs/out.gif")
+# makegif(pomdp, policy, filename="gifs/out.gif",max_steps=100)
 
 
 # @show (m,sem) = runTests(pomdp,policy,10)
@@ -101,15 +110,16 @@ end
 # @show r = simulate(rs, pomdp, policy)
 # global r_sum = 0.0
 # global bruh = 0
-# for (b, s, a, o, r) in stepthrough(pomdp, policy, "b,s,a,o,r"; max_steps=10000)
-#     # bruh += 1
-#     # println("Step $step")
-#     @show s
-#     @show a
-#     @show o
-#     @show r
-#     # r_sum += r
-#     # @show r_sum
-#     println()
-# end
+
+for (b, s, a, o, r) in stepthrough(pomdp, policy, "b,s,a,o,r"; max_steps=100)
+    # bruh += 1
+    # println("Step $step")
+    @show s
+    @show a
+    @show o
+    @show r
+    # r_sum += r
+    # @show r_sum
+    println()
+end
 

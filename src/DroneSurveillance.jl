@@ -23,10 +23,8 @@ const DSPos = SVector{2, Int64}
 
 struct DSState
     quad::DSPos
-    entities::Vector{DSPos}
     identities::Vector{typeof(:thing)}
-    photosTaken::Int
-    photoHits::Int
+    photoHits::Vector{Int} #0 if no photo taken, num_entities+1 if not a hit, ID of entity if hit
 end
 
 
@@ -67,42 +65,55 @@ end
 """
 @with_kw mutable struct DroneSurveillancePOMDP{M} <: POMDP{DSState, Int64, Int64}
     n = 5
-    maxPhotos = 5;
+    maxPhotos = 3;
     num_particles = 70_000
     size::Tuple{Int64, Int64} = (n,n)
     region_A::DSPos = DSPos([1, 1])
     fov::Tuple{Int64, Int64} = (3, 3)
     agent_policy::Symbol = :restricted
     camera::M = QuadCam() # PerfectCam
-    # reward_state = DSState(DSPos([-1, -1]),[DSPos([-1, -1]),DSPos([-1, -1]),DSPos([-1, -1])], [:T,:B,:D], true)
-    terminal_state::DSState = DSState(DSPos([-1, -1]),[DSPos([-1, -1]),DSPos([-1, -1]),DSPos([-1, -1])], [:T,:B,:D], 0, 0)
     discount_factor::Float64 = 0.95
     #our stuff
     ids = [:T,:B,:D]
-    num_entities = 3
     # entities = [DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])]),DSPos([rand(1:size[1]),rand(1:size[2])])]
     entities = [DSPos([1,n]), DSPos([n,1]), DSPos([n,n])]
-    idPerms = Dict([p[1],p[2],p[3]] => i for (i,p) in enumerate(perm(ids, length(entities)))) # allow entities to be whatever
+    num_entities = length(entities)
+    idPerms = Dict([p[1],p[2],p[3]] => i for (i,p) in enumerate(perm(ids, num_entities))) # allow entities to be whatever
+    
+    terminal_state::DSState = DSState(DSPos([-1, -1]), [:T,:B,:D], repeat([-1],maxPhotos))
 end
 
 POMDPs.isterminal(pomdp::DroneSurveillancePOMDP, s::DSState) = s == pomdp.terminal_state
 POMDPs.discount(pomdp::DroneSurveillancePOMDP) = pomdp.discount_factor
 
 function POMDPs.reward(pomdp::DroneSurveillancePOMDP, s::DSState, a::Int64, sp::DSState)
-    if !(0.0 < sp.quad[1] <= pomdp.size[1]) || !(0.0 < sp.quad[2] <= pomdp.size[2]) 
-        return 2.0*s.photoHits
+    # if !isterminal(pomdp,s) 
+    # if !isterminal(pomdp,s) && isterminal(pomdp,sp) 
+    #     T_idxs = findall(x -> x==:T, s.identities)
+    #     return sum([en in T_idxs ? 2 : 0 for en in unique(s.photoHits)])
+    # end
+    # T_idxs = findall(x -> x==:T, s.identities)
+    # if a == 6 && s.quad in s.entities[findall(:T .== s.identities)]
+    #     # return 2
+    # end
+
+    # T_idxs = findall(x -> x==:T, s.identities)
+    # return sum([en in T_idxs ? 2 : 0 for en in unique(s.photoHits)])
+
+    if s.photoHits[1]==0 && a==6 && s.quad in pomdp.entities
+        return 20.0
     end
+
+
+
     
     idx = findfirst(:D .== s.identities)
-    if !isnothing(idx) && s.quad == s.entities[idx]
+    if !isnothing(idx) && s.quad == pomdp.entities[idx]
         return -1.0
     end
     
-    return 0.0
+    return -0.0
 end
-
-
-
 
 include("states.jl")
 include("actions.jl")
